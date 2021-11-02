@@ -8,6 +8,43 @@ pub struct LyrianToken {
     pub syllable: String,
 }
 
+impl LyrianToken {
+    pub fn new(word: String, mora: String, syllable: String) -> LyrianToken {
+        LyrianToken {
+            word: word,
+            mora: mora,
+            syllable: syllable,
+        }
+    }
+
+    pub fn mora_len(self) -> usize {
+        if self.mora == String::from("unknown") {
+            return 0;
+        }
+        self.mora.chars().count()
+    }
+
+    pub fn syllable_len(self) -> usize {
+        if self.syllable == String::from("unknown") {
+            return 0;
+        }
+
+        let mut cloned = self.syllable.clone();
+        let targets = [
+            'ー', '～', 'ン', 'ッ', 'ァ', 'ィ', 'ゥ', 'ェ', 'ォ', 'ャ', 'ュ', 'ョ', '「', '」',
+            '。', '、', '!', '！', '?', '？', '"', '#', '$', '%', '&', '\'', '(', ')', '（', '）',
+            '-', '=', '＝', '^', '＾', '|', '\\', '｜', '￥', '@', '`', '[', ']', '{', '}', '｛',
+            '｝', ';', '；', ':', '：', '+', '＋', '*', '＊', '<', '＜', '>', '＞', '_',
+        ];
+        cloned.retain(|c| !targets.iter().any(|target| c == *target));
+
+        // TODO: Processing of voiceless sound
+        // TODO: Processing to join vowel
+
+        cloned.chars().count()
+    }
+}
+
 pub fn tokenize(contents: &str) -> Result<Vec<LyrianToken>, String> {
     let mut tokenizer;
     let lin_tokens;
@@ -30,11 +67,11 @@ pub fn tokenize(contents: &str) -> Result<Vec<LyrianToken>, String> {
             vec![String::from("unknown"); 2]
         };
 
-        lyr_tokens.push(LyrianToken {
-            word: token.text.to_string(),
-            mora: mem::replace(&mut detail[0], String::from("")),
-            syllable: mem::replace(&mut detail[1], String::from("")),
-        });
+        lyr_tokens.push(LyrianToken::new(
+            token.text.to_string(),
+            mem::replace(&mut detail[0], String::from("")),
+            mem::replace(&mut detail[1], String::from("")),
+        ));
     }
 
     Ok(lyr_tokens)

@@ -1,14 +1,15 @@
 use crate::markov::{Markov, MarkovState};
-use crate::morphological_analysis::{tokenize, LyrianToken};
+use crate::morphological_analysis::tokenize;
 
 pub struct LyrianModel {
-    pub token: LyrianToken,
-    pub state_space: Vec<MarkovState>,
+    pub markov_model: Vec<MarkovState>,
 }
 
-pub fn make_model(contents: &str) -> Result<Vec<LyrianModel>, String> {
+pub fn make_model(contents: &str) -> Result<LyrianModel, String> {
     let tokens = tokenize(contents)?;
     let model_maker = Markov::new(tokens);
-    let lyr_model = model_maker.tokens_to_model();
-    Ok(lyr_model)
+    let markov_model = model_maker.tokens_to_model();
+    Ok(LyrianModel {
+        markov_model: markov_model,
+    })
 }

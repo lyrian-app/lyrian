@@ -1,9 +1,12 @@
-use crate::model::LyrianModel;
 use crate::morphological_analysis::LyrianToken;
 use std::mem;
 
-#[derive(Debug)]
 pub struct MarkovState {
+    pub token: LyrianToken,
+    pub state_space: Vec<MarkovProbability>,
+}
+
+pub struct MarkovProbability {
     pub token: LyrianToken,
     pub probability: f32,
 }
@@ -27,9 +30,9 @@ impl Markov {
         Markov { tokens: tokens }
     }
 
-    pub fn tokens_to_model(self) -> Vec<LyrianModel> {
+    pub fn tokens_to_model(self) -> Vec<MarkovState> {
         let chains = self.make_chains();
-        let model = calc_probability(chains);
+        let model = chains_to_model(chains);
         model
     }
 
@@ -80,7 +83,7 @@ impl Markov {
     }
 }
 
-fn calc_probability(chains: Vec<MarkovChains>) -> Vec<LyrianModel> {
+fn chains_to_model(chains: Vec<MarkovChains>) -> Vec<MarkovState> {
     let mut model = Vec::new();
 
     for chain in chains {
@@ -106,13 +109,13 @@ fn calc_probability(chains: Vec<MarkovChains>) -> Vec<LyrianModel> {
         let mut state = Vec::new();
         let sum = counters.iter().fold(0, |acc, cur| acc + cur.count);
         for counter in counters {
-            state.push(MarkovState {
+            state.push(MarkovProbability {
                 token: counter.token,
                 probability: counter.count as f32 / sum as f32,
             })
         }
 
-        model.push(LyrianModel {
+        model.push(MarkovState {
             token: chain.token,
             state_space: state,
         })

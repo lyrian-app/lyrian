@@ -54,7 +54,7 @@ impl MarkovModel {
         }
 
         let mut rng = rand::thread_rng();
-        let i = (rng.next_u32() % filtered.len()) as usize;
+        let i: usize = rng.gen::<usize>() % filtered.len();
 
         let state = mem::replace(
             &mut filtered[i],

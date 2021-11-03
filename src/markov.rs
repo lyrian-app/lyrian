@@ -128,14 +128,7 @@ impl MarkovChain {
 
         let mut chain_tokens_index = 0;
         for i in 0..tokens.len() {
-            let token = mem::replace(
-                &mut cloned[i],
-                LyrianToken {
-                    word: String::from(""),
-                    mora: String::from(""),
-                    syllable: String::from(""),
-                },
-            );
+            let token = mem::replace(&mut cloned[i], LyrianToken::empty_token());
 
             let j = match chains.iter().position(|c| c.token.word == token.word) {
                 Some(v) => v,
@@ -157,11 +150,7 @@ impl MarkovChain {
 
         for i in 0..chains.len() {
             if chains[i].chain_tokens.is_empty() {
-                chains[i].chain_tokens.push(LyrianToken {
-                    word: String::from("。"),
-                    mora: String::from(""),
-                    syllable: String::from(""),
-                });
+                chains[i].chain_tokens.push(LyrianToken::empty_token());
             }
         }
 

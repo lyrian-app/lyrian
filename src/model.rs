@@ -7,7 +7,7 @@ pub struct LyrianModel {
     pub markov_model: Vec<MarkovState>,
 }
 
-impl LyrianModel {
+impl<'a> LyrianModel {
     fn new(markov_model: Vec<MarkovState>) -> LyrianModel {
         LyrianModel {
             markov_model: markov_model,
@@ -20,6 +20,16 @@ impl LyrianModel {
         let markov_model = model_maker.make_model();
         let lyr_model = LyrianModel::new(markov_model);
         Ok(lyr_model)
+    }
+
+    pub fn from_json(json: &'a str) -> Result<LyrianModel, String> {
+        match serde_json::from_str::<'a, Vec<MarkovState>>(json) {
+            Ok(markov_model) => {
+                let lyr_model = LyrianModel::new(markov_model);
+                Ok(lyr_model)
+            }
+            Err(e) => Err(e.to_string()),
+        }
     }
 
     pub fn generate_lyrics(

@@ -1,4 +1,5 @@
 use crate::morphological_analysis::LyrianToken;
+use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::mem;
 
@@ -7,13 +8,13 @@ pub struct MarkovModel {
     pub states: Vec<MarkovState>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct MarkovState {
     pub token: LyrianToken,
     pub state_space: Vec<MarkovProbability>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct MarkovProbability {
     pub token: LyrianToken,
     pub probability: f32,
@@ -39,6 +40,27 @@ impl MarkovModel {
         let chains = MarkovChain::from_tokens(tokens);
         let states = MarkovState::from_chains(chains);
         MarkovModel::new(states)
+    }
+
+    pub fn get_random_state(&self, word_len: usize, rhythmical: bool) -> MarkovState {
+        let mut filtered = self
+            .states
+            .iter()
+            .filter(|state| state.token.length(rhythmical) == word_len)
+            .collect();
+
+        let mut rng = rand::thread_rng();
+        let i = (rng.next_u32() % filtered.len()) as usize;
+
+        let state = mem::replace(
+            &mut filtered[i],
+            MarkovState {
+                token: LyrianToken::empty_token(),
+                state_space: Vec::new(),
+            },
+        );
+
+        state
     }
 }
 

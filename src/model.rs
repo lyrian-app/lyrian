@@ -14,6 +14,21 @@ impl LyrianModel {
         }
     }
 
+    pub fn generate_lyrics(
+        &self,
+        phrase_len: i32,
+        first_word_len: i32,
+        rhythmical: bool,
+    ) -> Result<String, String> {
+        if phrase_len < first_word_len {
+            return Err(String::from(
+                "The phrase length must be longer than the first word length.",
+            ));
+        }
+
+        Ok(String::from(""))
+    }
+
     pub fn to_json_str(&self) -> Result<String, String> {
         match serde_json::to_string(&self.markov_model) {
             Ok(v) => Ok(v),

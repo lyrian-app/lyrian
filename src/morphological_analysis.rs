@@ -26,14 +26,21 @@ impl LyrianToken {
         }
     }
 
-    pub fn mora_len(&self) -> usize {
+    pub fn length(&self, rhythmical: bool) -> usize {
+        if rhythmical {
+            return self.syllable_len();
+        }
+        self.mora_len()
+    }
+
+    fn mora_len(&self) -> usize {
         if self.mora == String::from("unknown") {
             return 0;
         }
         self.mora.chars().count()
     }
 
-    pub fn syllable_len(&self) -> usize {
+    fn syllable_len(&self) -> usize {
         if self.syllable == String::from("unknown") {
             return 0;
         }

@@ -8,3 +8,4 @@ edition = "2018"
 [dependencies]
 lindera = "0.8.0"
 lindera-core = "0.8.0"
+serde = "1.0.130"

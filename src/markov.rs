@@ -83,6 +83,25 @@ impl MarkovState {
 
         states
     }
+
+    pub fn get_random_token(&self, rhythmical: bool) -> LyrianToken {
+        let mut probs = Vec::new();
+        let mut sum = 0.0;
+        for prob in self.state_space {
+            sum = prob.probability + sum;
+            probs.push((prob.token, sum));
+        }
+
+        let mut rng = rand::thread_rng();
+        let f: f32 = rng.gen();
+        for (token, p) in probs {
+            if f < p {
+                return token;
+            }
+        }
+
+        mem::replace(&mut probs[probs.len() - 1].0, LyrianToken::empty_token())
+    }
 }
 
 impl MarkovProbability {

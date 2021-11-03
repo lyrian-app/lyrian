@@ -43,11 +43,12 @@ impl MarkovModel {
     }
 
     pub fn get_random_state(&self, word_len: usize, rhythmical: bool) -> Option<MarkovState> {
-        let mut filtered = self
-            .states
-            .iter()
-            .filter(|state| state.token.length(rhythmical) == word_len)
-            .collect();
+        let mut filtered: Vec<MarkovState> = Vec::new();
+        for state in self.states.clone() {
+            if state.token.length(rhythmical) == word_len {
+                filtered.push(state)
+            }
+        }
 
         if filtered.len() == 0 {
             return None;
@@ -87,20 +88,21 @@ impl MarkovState {
     pub fn get_random_token(&self) -> LyrianToken {
         let mut probs = Vec::new();
         let mut sum = 0.0;
-        for prob in self.state_space {
+        for prob in &self.state_space {
             sum = prob.probability + sum;
-            probs.push((prob.token, sum));
+            probs.push((prob.clone().token, sum));
         }
 
         let mut rng = rand::thread_rng();
         let f: f32 = rng.gen();
-        for (token, p) in probs {
-            if f < p {
-                return token;
+        for (token, p) in &probs {
+            if f < *p {
+                return token.clone();
             }
         }
 
-        mem::replace(&mut probs[probs.len() - 1].0, LyrianToken::empty_token())
+        let i = probs.len() - 1;
+        mem::replace(&mut probs[i].0, LyrianToken::empty_token())
     }
 }
 

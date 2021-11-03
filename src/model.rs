@@ -1,7 +1,6 @@
 use crate::markov::MarkovModel;
 use crate::morphological_analysis::tokenize;
 use serde::{Deserialize, Serialize};
-use std::mem;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct LyrianModel {
@@ -48,7 +47,7 @@ impl<'a> LyrianModel {
             let first_state_opt = &self.markov.get_random_state(first_word_len, rhythmical);
             match first_state_opt {
                 Some(state) => {
-                    let chained_tokens = Vec::new();
+                    let mut chained_tokens = Vec::new();
                     for _ in 0..64 {
                         chained_tokens.push(state.get_random_token());
                         let generated_len = {
@@ -59,7 +58,7 @@ impl<'a> LyrianModel {
                         };
 
                         if lyric_len < generated_len {
-                            mem::drop(chained_tokens);
+                            chained_tokens.retain(|_| false);
                         }
 
                         if lyric_len == generated_len {

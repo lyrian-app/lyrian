@@ -45,26 +45,34 @@ impl<'a> LyrianModel {
         }
 
         for _ in 0..64 {
-            let first_token = &self.markov.get_random_state(first_word_len, rhythmical);
-            let chained_tokens = Vec::new();
+            let first_state_opt = &self.markov.get_random_state(first_word_len, rhythmical);
+            match first_state_opt {
+                Some(state) => {
+                    let chained_tokens = Vec::new();
+                    for _ in 0..64 {
+                        chained_tokens.push(state.get_random_token(rhythmical));
+                        let generated_len = {
+                            let chained_tokens_len = chained_tokens
+                                .iter()
+                                .fold(0, |acc, cur| acc + cur.length(rhythmical));
+                            first_word_len + chained_tokens_len
+                        };
 
-            for _ in 0..64 {
-                chained_tokens.push(first_token.get_random_token(rhythmical));
-                let generated_len = {
-                    let first_token_len = first_token.token.length(rhythmical);
-                    let chained_tokens_len = chained_tokens
-                        .iter()
-                        .fold(0, |acc, cur| acc + cur.length(rhythmical));
-                    first_token_len + chained_tokens_len
-                };
+                        if lyric_len < generated_len {
+                            mem::drop(chained_tokens);
+                        }
 
-                if lyric_len < generated_len {
-                    mem::drop(chained_tokens);
+                        if lyric_len == generated_len {
+                            let chained_words =
+                                chained_tokens.iter().fold("", |acc, cur| acc + cur.word);
+                            return Ok(state.token.word + chained_words);
+                        }
+                    }
                 }
-
-                if lyric_len == generated_len {
-                    let chained_words = chained_tokens.iter().fold("", |acc, cur| acc + cur.word);
-                    return Ok(first_token.token.word + chained_words);
+                None => {
+                    return Err(String::from(
+                        "Could not find a word with the same length as first_word_len.",
+                    ))
                 }
             }
         }

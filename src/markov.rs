@@ -42,12 +42,16 @@ impl MarkovModel {
         MarkovModel::new(states)
     }
 
-    pub fn get_random_state(&self, word_len: usize, rhythmical: bool) -> MarkovState {
+    pub fn get_random_state(&self, word_len: usize, rhythmical: bool) -> Option<MarkovState> {
         let mut filtered = self
             .states
             .iter()
             .filter(|state| state.token.length(rhythmical) == word_len)
             .collect();
+
+        if filtered.len() == 0 {
+            return None;
+        }
 
         let mut rng = rand::thread_rng();
         let i = (rng.next_u32() % filtered.len()) as usize;
@@ -60,7 +64,7 @@ impl MarkovModel {
             },
         );
 
-        state
+        Some(state)
     }
 }
 

@@ -588,6 +588,7 @@ dependencies = [
  "lindera",
  "lindera-core",
  "serde",
+ "serde_json",
 ]
 
 [[package]]

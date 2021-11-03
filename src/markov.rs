@@ -1,6 +1,10 @@
 use crate::morphological_analysis::LyrianToken;
 use std::mem;
 
+pub struct Markov {
+    pub tokens: Vec<LyrianToken>,
+}
+
 pub struct MarkovState {
     pub token: LyrianToken,
     pub state_space: Vec<MarkovProbability>,
@@ -16,13 +20,10 @@ struct MarkovCounter {
     count: i32,
 }
 
-struct MarkovChains {
+#[derive(Clone)]
+struct MarkovChain {
     token: LyrianToken,
     chain_tokens: Vec<LyrianToken>,
-}
-
-pub struct Markov {
-    pub tokens: Vec<LyrianToken>,
 }
 
 impl Markov {
@@ -30,63 +31,47 @@ impl Markov {
         Markov { tokens: tokens }
     }
 
-    pub fn tokens_to_model(self) -> Vec<MarkovState> {
-        let chains = self.make_chains();
-        let model = chains_to_model(chains);
+    pub fn make_model(self) -> Vec<MarkovState> {
+        let chains = MarkovChain::from_tokens(self.tokens);
+        let model = MarkovState::from_chains(chains);
         model
-    }
-
-    fn make_chains(self) -> Vec<MarkovChains> {
-        let mut chains: Vec<MarkovChains> = Vec::new();
-        let mut cloned = self.tokens.clone();
-
-        let mut chain_tokens_index = 0;
-        for i in 0..self.tokens.len() {
-            let token = mem::replace(
-                &mut cloned[i],
-                LyrianToken {
-                    word: String::from(""),
-                    mora: String::from(""),
-                    syllable: String::from(""),
-                },
-            );
-
-            let i = match chains.iter().position(|c| c.token.word == token.word) {
-                Some(v) => v,
-                None => {
-                    chains.push(MarkovChains {
-                        token: token.clone(),
-                        chain_tokens: Vec::new(),
-                    });
-                    chains.len() - 1
-                }
-            };
-
-            if i != 0 {
-                chains[chain_tokens_index].chain_tokens.push(token);
-            }
-
-            chain_tokens_index = i;
-        }
-
-        for i in 0..chains.len() {
-            if chains[i].chain_tokens.is_empty() {
-                chains[i].chain_tokens.push(LyrianToken {
-                    word: String::from("。"),
-                    mora: String::from(""),
-                    syllable: String::from(""),
-                });
-            }
-        }
-
-        chains
     }
 }
 
-fn chains_to_model(chains: Vec<MarkovChains>) -> Vec<MarkovState> {
-    let mut model = Vec::new();
+impl MarkovState {
+    fn from_chains(chains: Vec<MarkovChain>) -> Vec<MarkovState> {
+        let mut states = Vec::new();
+        for chain in chains {
+            let token = chain.clone().token;
+            let counters = MarkovCounter::from_chain(chain);
+            let state_space = MarkovProbability::from_counters(counters);
+            states.push(MarkovState {
+                token: token,
+                state_space: state_space,
+            });
+        }
 
-    for chain in chains {
+        states
+    }
+}
+
+impl MarkovProbability {
+    fn from_counters(counters: Vec<MarkovCounter>) -> Vec<MarkovProbability> {
+        let mut state_space = Vec::new();
+        let sum = counters.iter().fold(0, |acc, cur| acc + cur.count);
+        for counter in counters {
+            state_space.push(MarkovProbability {
+                token: counter.token,
+                probability: counter.count as f32 / sum as f32,
+            })
+        }
+
+        state_space
+    }
+}
+
+impl MarkovCounter {
+    fn from_chain(chain: MarkovChain) -> Vec<MarkovCounter> {
         let mut counters = Vec::new();
 
         let mut non_dup_tokens = chain.chain_tokens.clone();
@@ -106,20 +91,54 @@ fn chains_to_model(chains: Vec<MarkovChains>) -> Vec<MarkovState> {
             });
         }
 
-        let mut state = Vec::new();
-        let sum = counters.iter().fold(0, |acc, cur| acc + cur.count);
-        for counter in counters {
-            state.push(MarkovProbability {
-                token: counter.token,
-                probability: counter.count as f32 / sum as f32,
-            })
+        counters
+    }
+}
+
+impl MarkovChain {
+    fn from_tokens(tokens: Vec<LyrianToken>) -> Vec<MarkovChain> {
+        let mut chains: Vec<MarkovChain> = Vec::new();
+        let mut cloned = tokens.clone();
+
+        let mut chain_tokens_index = 0;
+        for i in 0..tokens.len() {
+            let token = mem::replace(
+                &mut cloned[i],
+                LyrianToken {
+                    word: String::from(""),
+                    mora: String::from(""),
+                    syllable: String::from(""),
+                },
+            );
+
+            let j = match chains.iter().position(|c| c.token.word == token.word) {
+                Some(v) => v,
+                None => {
+                    chains.push(MarkovChain {
+                        token: token.clone(),
+                        chain_tokens: Vec::new(),
+                    });
+                    chains.len() - 1
+                }
+            };
+
+            if i != 0 {
+                chains[chain_tokens_index].chain_tokens.push(token);
+            }
+
+            chain_tokens_index = j;
         }
 
-        model.push(MarkovState {
-            token: chain.token,
-            state_space: state,
-        })
-    }
+        for i in 0..chains.len() {
+            if chains[i].chain_tokens.is_empty() {
+                chains[i].chain_tokens.push(LyrianToken {
+                    word: String::from("。"),
+                    mora: String::from(""),
+                    syllable: String::from(""),
+                });
+            }
+        }
 
-    model
+        chains
+    }
 }

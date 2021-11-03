@@ -14,6 +14,14 @@ impl LyrianModel {
         }
     }
 
+    pub fn from_str(contents: &str) -> Result<LyrianModel, String> {
+        let tokens = tokenize(contents)?;
+        let model_maker = Markov::new(tokens);
+        let markov_model = model_maker.make_model();
+        let lyr_model = LyrianModel::new(markov_model);
+        Ok(lyr_model)
+    }
+
     pub fn generate_lyrics(
         &self,
         phrase_len: i32,
@@ -35,11 +43,4 @@ impl LyrianModel {
             Err(e) => Err(e.to_string()),
         }
     }
-}
-
-pub fn make_model(contents: &str) -> Result<LyrianModel, String> {
-    let tokens = tokenize(contents)?;
-    let model_maker = Markov::new(tokens);
-    let markov_model = model_maker.make_model();
-    Ok(LyrianModel::new(markov_model))
 }

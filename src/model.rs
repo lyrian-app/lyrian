@@ -63,9 +63,10 @@ impl<'a> LyrianModel {
                         }
 
                         if lyric_len == generated_len {
-                            let chained_words =
-                                chained_tokens.iter().fold("", |acc, cur| acc + cur.word);
-                            return Ok(state.token.word + chained_words);
+                            let chained_words = chained_tokens
+                                .iter()
+                                .fold(String::from(""), |acc, cur| format!("{}{}", acc, cur.word));
+                            return Ok(format!("{}{}", state.token.word, chained_words));
                         }
                     }
                 }

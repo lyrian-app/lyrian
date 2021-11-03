@@ -50,7 +50,7 @@ impl<'a> LyrianModel {
                 Some(state) => {
                     let chained_tokens = Vec::new();
                     for _ in 0..64 {
-                        chained_tokens.push(state.get_random_token(rhythmical));
+                        chained_tokens.push(state.get_random_token());
                         let generated_len = {
                             let chained_tokens_len = chained_tokens
                                 .iter()

@@ -2,7 +2,7 @@ use crate::markov::{Markov, MarkovState};
 use crate::morphological_analysis::tokenize;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct LyrianModel {
     pub markov_model: Vec<MarkovState>,
 }

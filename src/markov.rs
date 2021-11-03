@@ -67,6 +67,15 @@ impl MarkovModel {
 
         Some(state)
     }
+
+    pub fn search_state(&self, state_name: String) -> Option<MarkovState> {
+        for state in self.states.clone() {
+            if state.token.word == state_name {
+                return Some(state);
+            }
+        }
+        None
+    }
 }
 
 impl MarkovState {

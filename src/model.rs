@@ -48,8 +48,13 @@ impl<'a> LyrianModel {
             match first_state_opt {
                 Some(state) => {
                     let mut chained_tokens = Vec::new();
+                    let mut current_state = state.clone();
+
                     for _ in 0..64 {
-                        chained_tokens.push(state.get_random_token());
+                        let next_token = current_state.get_random_token();
+                        current_state = self.markov.search_state(next_token.clone().word).unwrap();
+                        chained_tokens.push(next_token);
+
                         let generated_len = {
                             let chained_tokens_len = chained_tokens
                                 .iter()

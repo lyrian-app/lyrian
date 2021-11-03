@@ -2,17 +2,18 @@ use crate::morphological_analysis::LyrianToken;
 use serde::{Deserialize, Serialize};
 use std::mem;
 
-pub struct Markov {
-    pub tokens: Vec<LyrianToken>,
+#[derive(Serialize, Deserialize, Debug)]
+pub struct MarkovModel {
+    pub states: Vec<MarkovState>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MarkovState {
     pub token: LyrianToken,
     pub state_space: Vec<MarkovProbability>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MarkovProbability {
     pub token: LyrianToken,
     pub probability: f32,
@@ -29,15 +30,15 @@ struct MarkovChain {
     chain_tokens: Vec<LyrianToken>,
 }
 
-impl Markov {
-    pub fn new(tokens: Vec<LyrianToken>) -> Markov {
-        Markov { tokens: tokens }
+impl MarkovModel {
+    fn new(states: Vec<MarkovState>) -> MarkovModel {
+        MarkovModel { states: states }
     }
 
-    pub fn make_model(self) -> Vec<MarkovState> {
-        let chains = MarkovChain::from_tokens(self.tokens);
-        let model = MarkovState::from_chains(chains);
-        model
+    pub fn from_tokens(tokens: Vec<LyrianToken>) -> MarkovModel {
+        let chains = MarkovChain::from_tokens(tokens);
+        let states = MarkovState::from_chains(chains);
+        MarkovModel::new(states)
     }
 }
 

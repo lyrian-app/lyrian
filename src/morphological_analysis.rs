@@ -18,14 +18,14 @@ impl LyrianToken {
         }
     }
 
-    pub fn mora_len(self) -> usize {
+    pub fn mora_len(&self) -> usize {
         if self.mora == String::from("unknown") {
             return 0;
         }
         self.mora.chars().count()
     }
 
-    pub fn syllable_len(self) -> usize {
+    pub fn syllable_len(&self) -> usize {
         if self.syllable == String::from("unknown") {
             return 0;
         }

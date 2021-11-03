@@ -14,7 +14,7 @@ impl LyrianModel {
         }
     }
 
-    pub fn to_json_str(self) -> Result<String, String> {
+    pub fn to_json_str(&self) -> Result<String, String> {
         match serde_json::to_string(&self.markov_model) {
             Ok(v) => Ok(v),
             Err(e) => Err(e.to_string()),

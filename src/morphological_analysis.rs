@@ -2,6 +2,8 @@ use lindera::tokenizer::Tokenizer;
 use serde::{Deserialize, Serialize};
 use std::mem;
 
+use crate::chars::*;
+
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Ord, PartialOrd, PartialEq)]
 pub struct LyrianToken {
     pub word: String,
@@ -45,19 +47,20 @@ impl LyrianToken {
             return 0;
         }
 
-        let mut cloned = self.syllable.clone();
-        let targets = [
-            'ー', '～', 'ン', 'ッ', 'ァ', 'ィ', 'ゥ', 'ェ', 'ォ', 'ャ', 'ュ', 'ョ', '「', '」',
-            '。', '、', '!', '！', '?', '？', '"', '#', '$', '%', '&', '\'', '(', ')', '（', '）',
-            '-', '=', '＝', '^', '＾', '|', '\\', '｜', '￥', '@', '`', '[', ']', '{', '}', '｛',
-            '｝', ';', '；', ':', '：', '+', '＋', '*', '＊', '<', '＜', '>', '＞', '_',
-        ];
-        cloned.retain(|c| !targets.iter().any(|target| c == *target));
+        let mut length = self.syllable.chars().count();
+
+        for ch1 in SKIPPED_CHARS {
+            for ch2 in self.syllable.chars() {
+                if ch1 == ch2 {
+                    length -= 1;
+                }
+            }
+        }
 
         // TODO: Processing of voiceless sound
         // TODO: Processing to join vowel
 
-        cloned.chars().count()
+        length
     }
 }
 

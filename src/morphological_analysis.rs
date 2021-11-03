@@ -1,7 +1,8 @@
 use lindera::tokenizer::Tokenizer;
+use serde::{Deserialize, Serialize};
 use std::mem;
 
-#[derive(Debug, Clone, Eq, Ord, PartialOrd, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, Ord, PartialOrd, PartialEq)]
 pub struct LyrianToken {
     pub word: String,
     pub mora: String,

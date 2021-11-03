@@ -1,15 +1,18 @@
 use crate::morphological_analysis::LyrianToken;
+use serde::{Deserialize, Serialize};
 use std::mem;
 
 pub struct Markov {
     pub tokens: Vec<LyrianToken>,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct MarkovState {
     pub token: LyrianToken,
     pub state_space: Vec<MarkovProbability>,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct MarkovProbability {
     pub token: LyrianToken,
     pub probability: f32,

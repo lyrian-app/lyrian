@@ -8,5 +8,5 @@ fn main() {
 
     let model = lyrian::model::LyrianModel::from_json(&*json).unwrap();
 
-    println!("{}", model.generate_lyrics(5, 3, true).unwrap());
+    println!("{}", model.generate_lyric(5, 3, true).unwrap());
 }

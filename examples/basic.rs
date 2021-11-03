@@ -8,6 +8,6 @@ fn main() {
 
     let model = lyrian::model::LyrianModel::from_str(&*contents).unwrap();
 
-    println!("{}", model.generate_lyrics(5, 3, true).unwrap());
+    println!("{}", model.generate_lyric(5, 3, true).unwrap());
     println!("{}", model.to_json_str().unwrap());
 }

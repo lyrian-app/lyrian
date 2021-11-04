@@ -6,15 +6,11 @@ use serde::{Deserialize, Serialize};
 pub struct MarkovModel {
     pub tokens: Vec<LyrianToken>,
     pub state_space: Vec<Vec<f32>>,
-    pre_index: Option<usize>,
+    pre_index: usize,
 }
 
 impl MarkovModel {
-    fn new(
-        tokens: Vec<LyrianToken>,
-        state_space: Vec<Vec<f32>>,
-        pre_index: Option<usize>,
-    ) -> MarkovModel {
+    fn new(tokens: Vec<LyrianToken>, state_space: Vec<Vec<f32>>, pre_index: usize) -> MarkovModel {
         MarkovModel {
             tokens: tokens,
             state_space: state_space,
@@ -27,8 +23,9 @@ impl MarkovModel {
         non_dup_tokens.sort();
         non_dup_tokens.dedup();
 
-        let mut state_freq = vec![vec![0; non_dup_tokens.len()]; non_dup_tokens.len()];
+        let tokens_len = non_dup_tokens.len();
 
+        let mut state_freq = vec![vec![0; tokens_len]; tokens_len];
         let mut pre_index: Option<usize> = None;
         for token in tokens {
             let cur_index = non_dup_tokens
@@ -41,7 +38,7 @@ impl MarkovModel {
             pre_index = Some(cur_index);
         }
 
-        let mut state_space = vec![vec![0.0; non_dup_tokens.len()]; non_dup_tokens.len()];
+        let mut state_space = vec![vec![0.0; tokens_len]; tokens_len];
         for (i, vector) in state_freq.iter().enumerate() {
             let row_sum = vector.iter().fold(0, |acc, cur| acc + cur);
             let mut cumulative_p = 0.0;
@@ -51,15 +48,16 @@ impl MarkovModel {
             }
         }
 
-        MarkovModel::new(non_dup_tokens, state_space, None)
+        MarkovModel::new(non_dup_tokens, state_space, tokens_len)
     }
 
     pub fn next(&mut self) -> &LyrianToken {
         let mut rng = rand::thread_rng();
         let f = rng.gen::<f32>();
-        let row_index = match self.pre_index {
-            Some(i) => i,
-            None => rng.gen::<usize>() % self.tokens.len(),
+        let row_index = if self.pre_index != self.tokens.len() {
+            self.pre_index
+        } else {
+            rng.gen::<usize>() % self.tokens.len()
         };
         let cur_index: usize = {
             let mut res = self.state_space[row_index].len() - 1;
@@ -72,13 +70,13 @@ impl MarkovModel {
             res
         };
 
-        self.pre_index = Some(cur_index);
+        self.pre_index = cur_index;
         self.tokens
             .get(cur_index)
             .expect("There is no token that should exist.")
     }
 
     pub fn initialize(&mut self) {
-        self.pre_index = None;
+        self.pre_index = self.tokens.len();
     }
 }

@@ -19,4 +19,10 @@ impl Lyric {
     pub fn add_token(&mut self, token: LyrianToken) {
         self.tokens.push(token);
     }
+
+    pub fn join(&self) -> String {
+        self.tokens
+            .iter()
+            .fold(String::from(""), |acc, cur| format!("{}{}", acc, cur.word))
+    }
 }

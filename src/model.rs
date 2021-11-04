@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct LyrianModel {
-    pub markov: MarkovModel<LyrianToken>,
+    markov: MarkovModel<LyrianToken>,
 }
 
 impl<'a> LyrianModel {

@@ -3,8 +3,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct MarkovModel<T> {
-    pub elements: Vec<T>,
-    pub state_space: Vec<Vec<f32>>,
+    elements: Vec<T>,
+    state_space: Vec<Vec<f32>>,
     pre_index: usize,
 }
 

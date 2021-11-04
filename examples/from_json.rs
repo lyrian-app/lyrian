@@ -6,7 +6,6 @@ fn main() {
     let mut json = String::new();
     f.read_to_string(&mut json).unwrap();
 
-    let model = lyrian::model::LyrianModel::from_json(&*json).unwrap();
-
-    println!("{}", model.generate_lyric(5, 3, true).unwrap());
+    let mut model = lyrian::model::LyrianModel::from_json(&*json).unwrap();
+    println!("{:?}", model.generate_lyric(7, true).unwrap());
 }

@@ -35,3 +35,14 @@ fn main() {
     println!("{}", lyric.join());
 }
 ```
+
+### Output
+
+```
+あるともう時間に
+読んだ僕は早くも
+```
+
+## Resources
+
+In the example code, we use Kenji Miyazawa's ["The Night of the Milky Way Train"](https://www.aozora.gr.jp/cards/000081/files/43737_19215.html) as a learning data.

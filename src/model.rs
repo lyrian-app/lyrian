@@ -1,15 +1,15 @@
 use crate::lyric::Lyric;
 use crate::markov::MarkovModel;
-use crate::morphological_analysis::tokenize;
+use crate::morphological_analysis::{tokenize, LyrianToken};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct LyrianModel {
-    pub markov: MarkovModel,
+    pub markov: MarkovModel<LyrianToken>,
 }
 
 impl<'a> LyrianModel {
-    fn new(markov_model: MarkovModel) -> LyrianModel {
+    fn new(markov_model: MarkovModel<LyrianToken>) -> LyrianModel {
         LyrianModel {
             markov: markov_model,
         }
@@ -17,13 +17,13 @@ impl<'a> LyrianModel {
 
     pub fn from_str(contents: &str) -> Result<LyrianModel, String> {
         let tokens = tokenize(contents)?;
-        let markov_model = MarkovModel::from_tokens(tokens);
+        let markov_model = MarkovModel::<LyrianToken>::from(tokens);
         let lyr_model = LyrianModel::new(markov_model);
         Ok(lyr_model)
     }
 
     pub fn from_json(json: &'a str) -> Result<LyrianModel, String> {
-        match serde_json::from_str::<'a, MarkovModel>(json) {
+        match serde_json::from_str::<'a, MarkovModel<LyrianToken>>(json) {
             Ok(markov_model) => {
                 let lyr_model = LyrianModel::new(markov_model);
                 Ok(lyr_model)

@@ -1,20 +1,19 @@
 use crate::morphological_analysis::LyrianToken;
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::mem;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct MarkovModel {
     pub states: Vec<MarkovState>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MarkovState {
     pub token: LyrianToken,
     pub state_space: Vec<MarkovProbability>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MarkovProbability {
     pub token: LyrianToken,
     pub probability: f32,
@@ -25,7 +24,6 @@ struct MarkovCounter {
     count: i32,
 }
 
-#[derive(Clone)]
 struct MarkovChain {
     token: LyrianToken,
     chain_tokens: Vec<LyrianToken>,
@@ -42,35 +40,28 @@ impl MarkovModel {
         MarkovModel::new(states)
     }
 
-    pub fn get_random_state(&self, word_len: usize, rhythmical: bool) -> Option<MarkovState> {
-        let mut filtered: Vec<MarkovState> = Vec::new();
-        for state in self.states.clone() {
+    pub fn get_random_state(&self, word_len: usize, rhythmical: bool) -> Option<&MarkovState> {
+        let mut filtered = Vec::new();
+        for state in &self.states {
             if state.token.length(rhythmical) == word_len {
                 filtered.push(state)
             }
         }
 
-        if filtered.len() == 0 {
-            return None;
-        }
-
         let mut rng = rand::thread_rng();
         let i: usize = rng.gen::<usize>() % filtered.len();
+        for (j, state) in filtered.iter().enumerate() {
+            if i == j {
+                return Some(state);
+            }
+        }
 
-        let state = mem::replace(
-            &mut filtered[i],
-            MarkovState {
-                token: LyrianToken::empty_token(),
-                state_space: Vec::new(),
-            },
-        );
-
-        Some(state)
+        None
     }
 
-    pub fn search_state(&self, state_name: String) -> Option<MarkovState> {
-        for state in self.states.clone() {
-            if state.token.word == state_name {
+    pub fn search_state(&self, state_name: &str) -> Option<&MarkovState> {
+        for state in &self.states {
+            if state.token.word == *state_name {
                 return Some(state);
             }
         }
@@ -82,11 +73,10 @@ impl MarkovState {
     fn from_chains(chains: Vec<MarkovChain>) -> Vec<MarkovState> {
         let mut states = Vec::new();
         for chain in chains {
-            let token = chain.clone().token;
-            let counters = MarkovCounter::from_chain(chain);
+            let counters = MarkovCounter::from_chain(&chain);
             let state_space = MarkovProbability::from_counters(counters);
             states.push(MarkovState {
-                token: token,
+                token: chain.token,
                 state_space: state_space,
             });
         }
@@ -94,24 +84,24 @@ impl MarkovState {
         states
     }
 
-    pub fn get_random_token(&self) -> LyrianToken {
-        let mut probs = Vec::new();
+    pub fn get_random_token(&self) -> &LyrianToken {
+        let mut probs: Vec<(&LyrianToken, f32)> = Vec::new();
         let mut sum = 0.0;
         for prob in &self.state_space {
             sum = prob.probability + sum;
-            probs.push((prob.clone().token, sum));
+            probs.push((&prob.token, sum));
         }
 
         let mut rng = rand::thread_rng();
         let f: f32 = rng.gen();
         for (token, p) in &probs {
             if f < *p {
-                return token.clone();
+                return token;
             }
         }
 
         let i = probs.len() - 1;
-        mem::replace(&mut probs[i].0, LyrianToken::empty_token())
+        probs[i].0
     }
 }
 
@@ -131,7 +121,7 @@ impl MarkovProbability {
 }
 
 impl MarkovCounter {
-    fn from_chain(chain: MarkovChain) -> Vec<MarkovCounter> {
+    fn from_chain(chain: &MarkovChain) -> Vec<MarkovCounter> {
         let mut counters = Vec::new();
 
         let mut non_dup_tokens = chain.chain_tokens.clone();
@@ -158,12 +148,9 @@ impl MarkovCounter {
 impl MarkovChain {
     fn from_tokens(tokens: Vec<LyrianToken>) -> Vec<MarkovChain> {
         let mut chains: Vec<MarkovChain> = Vec::new();
-        let mut cloned = tokens.clone();
 
         let mut chain_tokens_index = 0;
-        for i in 0..tokens.len() {
-            let token = mem::replace(&mut cloned[i], LyrianToken::empty_token());
-
+        for (i, token) in tokens.iter().enumerate() {
             let j = match chains.iter().position(|c| c.token.word == token.word) {
                 Some(v) => v,
                 None => {
@@ -176,15 +163,15 @@ impl MarkovChain {
             };
 
             if i != 0 {
-                chains[chain_tokens_index].chain_tokens.push(token);
+                chains[chain_tokens_index].chain_tokens.push(token.clone());
             }
 
             chain_tokens_index = j;
         }
 
-        for i in 0..chains.len() {
-            if chains[i].chain_tokens.is_empty() {
-                chains[i].chain_tokens.push(LyrianToken::empty_token());
+        for chain in &mut chains {
+            if chain.chain_tokens.is_empty() {
+                chain.chain_tokens.push(LyrianToken::empty_token());
             }
         }
 

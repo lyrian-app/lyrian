@@ -1,4 +1,4 @@
-use crate::markov::MarkovModel;
+use crate::markov::{MarkovModel, MarkovState};
 use crate::morphological_analysis::tokenize;
 use serde::{Deserialize, Serialize};
 
@@ -48,11 +48,12 @@ impl<'a> LyrianModel {
             match first_state_opt {
                 Some(state) => {
                     let mut chained_tokens = Vec::new();
-                    let mut current_state = state.clone();
+                    let mut current_state: &MarkovState = state;
 
                     for _ in 0..64 {
                         let next_token = current_state.get_random_token();
-                        current_state = self.markov.search_state(next_token.clone().word).unwrap();
+
+                        current_state = self.markov.search_state(&*next_token.word).unwrap();
                         chained_tokens.push(next_token);
 
                         let generated_len = {

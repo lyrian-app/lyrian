@@ -38,13 +38,15 @@ impl MarkovModel {
             pre_index = Some(cur_index);
         }
 
-        let mut state_space = vec![vec![0.0; tokens_len]; tokens_len];
+        let mut state_space = vec![vec![1.0; tokens_len]; tokens_len];
         for (i, vector) in state_freq.iter().enumerate() {
             let row_sum = vector.iter().fold(0, |acc, cur| acc + cur);
             let mut cumulative_p = 0.0;
             for (j, count) in vector.iter().enumerate() {
-                cumulative_p = cumulative_p + *count as f32 / row_sum as f32;
-                state_space[i][j] = cumulative_p;
+                if row_sum != 0 {
+                    cumulative_p = cumulative_p + (*count as f32 / row_sum as f32);
+                    state_space[i][j] = cumulative_p;
+                }
             }
         }
 

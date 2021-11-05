@@ -2,7 +2,20 @@ use lindera::tokenizer::Tokenizer;
 use serde::{Deserialize, Serialize};
 use std::mem;
 
-use crate::chars::*;
+use crate::chars::{LOWER_CASE, SYLLABLE_CHARS, SYMBOLS};
+
+/// Returns the counts of duplicated elements in two `Vec<T>`.
+fn dup_num<T: std::cmp::PartialEq>(list1: &Vec<T>, list2: &Vec<T>) -> usize {
+    let mut num = 0;
+    for i in list1 {
+        for j in list2 {
+            if *i == *j {
+                num += 1;
+            }
+        }
+    }
+    num
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Ord, PartialOrd, PartialEq)]
 /// Token structure
@@ -42,6 +55,11 @@ impl LyrianToken {
 
         let mut sound_len = self.mora.chars().count();
 
+        sound_len -= dup_num(
+            &self.mora.chars().collect(),
+            &vec![LOWER_CASE.to_vec(), SYMBOLS.to_vec()].concat(),
+        );
+
         if syllable {
             sound_len = self.syllable_len();
         }
@@ -59,17 +77,9 @@ impl LyrianToken {
 
     /// Returns the length of the word by syllable unit.
     fn syllable_len(&self) -> usize {
-        let mut length = self.syllable.chars().count();
-
-        for ch1 in SKIPPED_CHARS {
-            for ch2 in self.syllable.chars() {
-                if ch1 == ch2 {
-                    length -= 1;
-                }
-            }
-        }
-
-        length
+        let length = self.syllable.chars().count();
+        let count = dup_num(&self.syllable.chars().collect(), &SYLLABLE_CHARS.to_vec());
+        length - count
     }
 
     // fn count_voiceless(&self) -> usize {

@@ -10,10 +10,10 @@ impl Lyric {
         Lyric { tokens: tokens }
     }
 
-    pub fn length(&self, rhythmical: bool) -> usize {
+    pub fn length(&self, syllable: bool, voiceless: bool, smooth: bool) -> usize {
         self.tokens
             .iter()
-            .fold(0, |acc, cur| acc + cur.length(rhythmical))
+            .fold(0, |acc, cur| acc + cur.length(syllable, voiceless, smooth))
     }
 
     pub fn add_token(&mut self, token: LyrianToken) {

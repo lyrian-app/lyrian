@@ -28,25 +28,29 @@ impl LyrianToken {
         }
     }
 
-    pub fn length(&self, rhythmical: bool) -> usize {
-        if rhythmical {
-            return self.syllable_len();
-        }
-        self.mora_len()
-    }
-
-    fn mora_len(&self) -> usize {
+    pub fn length(&self, syllable: bool, voiceless: bool, smooth: bool) -> usize {
         if self.mora == String::from("unknown") {
             return 0;
         }
-        self.mora.chars().count()
+
+        let mut sound_len = self.mora.chars().count();
+
+        if syllable {
+            sound_len = self.syllable_len();
+        }
+
+        if voiceless {
+            sound_len -= self.count_voiceless();
+        }
+
+        if smooth {
+            sound_len -= self.count_smooth();
+        }
+
+        sound_len
     }
 
     fn syllable_len(&self) -> usize {
-        if self.syllable == String::from("unknown") {
-            return 0;
-        }
-
         let mut length = self.syllable.chars().count();
 
         for ch1 in SKIPPED_CHARS {
@@ -57,10 +61,17 @@ impl LyrianToken {
             }
         }
 
-        // TODO: Processing of voiceless sound
-        // TODO: Processing to join vowel
-
         length
+    }
+
+    fn count_voiceless(&self) -> usize {
+        // TODO: Processing to calc number of voiceless sound
+        0
+    }
+
+    fn count_smooth(&self) -> usize {
+        // TODO: Processing to calc number of smooth vowel sound
+        0
     }
 }
 

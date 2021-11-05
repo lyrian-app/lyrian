@@ -32,3 +32,25 @@ impl Lyric {
             .fold(String::from(""), |acc, cur| format!("{}{}", acc, cur.word))
     }
 }
+
+#[cfg(test)]
+mod lyric_test {
+    use crate::lyric::Lyric;
+
+    #[test]
+    fn join_words_of_tokens() {
+        use crate::morphological_analysis::LyrianToken;
+
+        let tokens = vec![
+            LyrianToken::new(
+                "大きな".to_string(),
+                "オオキナ".to_string(),
+                "オーキナ".to_string(),
+            ),
+            LyrianToken::new("、".to_string(), "、".to_string(), "、".to_string()),
+            LyrianToken::new("空".to_string(), "ソラ".to_string(), "ソラ".to_string()),
+        ];
+        let lyric = Lyric::new(tokens);
+        assert_eq!(lyric.join(), "大きな空".to_string())
+    }
+}

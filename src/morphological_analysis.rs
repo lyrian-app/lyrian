@@ -5,6 +5,7 @@ use std::mem;
 use crate::chars::*;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Ord, PartialOrd, PartialEq)]
+/// Token structure
 pub struct LyrianToken {
     pub word: String,
     pub mora: String,
@@ -12,6 +13,7 @@ pub struct LyrianToken {
 }
 
 impl LyrianToken {
+    /// Creates a new instance of `LyrianToken`.
     pub fn new(word: String, mora: String, syllable: String) -> LyrianToken {
         LyrianToken {
             word: word,
@@ -20,6 +22,19 @@ impl LyrianToken {
         }
     }
 
+    /// Calculates the number of pronunciation.
+    ///
+    /// The return value will be changed by the following arguments.
+    ///
+    /// - syllable: `bool`
+    ///     - Will calculate the number by syllable unit.
+    /// - voiceless: `bool` (unimplemented)
+    ///     - Will not count voiceless sounds, like "ク" in "サクラ".
+    /// - smoothly: `bool` (unimplemented)
+    ///     - Will not count smoothly connected vowel sounds.
+    ///     - For example, the "イ" in "ダイチ" will be counted as one sound "ダイ".
+    ///
+    /// If you set `false` to all the arguments, you will get the number by mora unit.
     pub fn length(&self, syllable: bool) -> usize {
         if self.mora == String::from("unknown") {
             return 0;
@@ -42,6 +57,7 @@ impl LyrianToken {
         sound_len
     }
 
+    /// Returns the length of the word by syllable unit.
     fn syllable_len(&self) -> usize {
         let mut length = self.syllable.chars().count();
 
@@ -67,6 +83,10 @@ impl LyrianToken {
     // }
 }
 
+/// Tokenizes contents in morphological analysis.
+///
+/// Lyrian uses [lindera](https://github.com/lindera-morphology/lindera) crate
+/// for morphological analysis.
 pub fn tokenize(contents: &str) -> Result<Vec<LyrianToken>, String> {
     let mut tokenizer;
     let lin_tokens;
@@ -84,7 +104,7 @@ pub fn tokenize(contents: &str) -> Result<Vec<LyrianToken>, String> {
     let mut lyr_tokens = Vec::new();
     for token in lin_tokens {
         let mut detail = if token.detail.len() != 1 {
-            token.detail.split_at(7).1.to_vec()
+            token.detail.split_at(7).1.to_vec() // get information of reading and phonation
         } else {
             vec![String::from("unknown"); 2]
         };

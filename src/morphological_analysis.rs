@@ -167,6 +167,22 @@ mod morphological_analysis_test {
         assert_eq!(token.length(true), 3)
     }
 
+    #[test]
+    fn get_length_of_word_that_has_lower_case() {
+        let token = LyrianToken::new(
+            "ラミィ".to_string(),
+            "ラミィ".to_string(),
+            "ラミィ".to_string(),
+        );
+        assert_eq!(token.length(false), 2)
+    }
+
+    #[test]
+    fn get_symbol_length() {
+        let token = LyrianToken::new("。".to_string(), "。".to_string(), "。".to_string());
+        assert_eq!(token.length(false), 0)
+    }
+
     // #[test]
     // fn get_word_length_that_has_voiceless_sound() {
     //     let token = LyrianToken::new("桜".to_string(), "サクラ".to_string(), "サクラ".to_string());

@@ -1,3 +1,5 @@
+//! A module related to the information of the generated lyric.
+
 use crate::morphological_analysis::LyrianToken;
 
 /// Lyric structure
@@ -6,7 +8,7 @@ pub struct Lyric {
 }
 
 impl Lyric {
-    /// Creates a new instance of `Lyric`.
+    /// Creates a new instance of [`Lyric`].
     pub fn new(tokens: Vec<LyrianToken>) -> Lyric {
         Lyric { tokens: tokens }
     }
@@ -18,12 +20,12 @@ impl Lyric {
             .fold(0, |acc, cur| acc + cur.length(syllable))
     }
 
-    /// Adds a new `LyrianToken` to `Lyric`.
+    /// Adds a new [`LyrianToken`] to [`Lyric`].
     pub fn add_token(&mut self, token: LyrianToken) {
         self.tokens.push(token);
     }
 
-    /// Join the words of `Vec<LyrianToken>`.
+    /// Join the words of [`Vec<LyrianToken>`].
     pub fn join(&self) -> String {
         self.tokens
             .iter()

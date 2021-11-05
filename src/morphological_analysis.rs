@@ -95,3 +95,70 @@ pub fn tokenize(contents: &str) -> Result<Vec<LyrianToken>, String> {
 
     Ok(lyr_tokens)
 }
+
+#[cfg(test)]
+mod morphological_analysis_test {
+    use crate::morphological_analysis::{tokenize, LyrianToken};
+
+    #[test]
+    fn get_lyrian_tokens_from_text() {
+        let text = "すもももももももものうち";
+        match tokenize(text) {
+            Ok(tokens) => {
+                let expected = vec![
+                    LyrianToken::new(
+                        "すもも".to_string(),
+                        "スモモ".to_string(),
+                        "スモモ".to_string(),
+                    ),
+                    LyrianToken::new("も".to_string(), "モ".to_string(), "モ".to_string()),
+                    LyrianToken::new("もも".to_string(), "モモ".to_string(), "モモ".to_string()),
+                    LyrianToken::new("も".to_string(), "モ".to_string(), "モ".to_string()),
+                    LyrianToken::new("もも".to_string(), "モモ".to_string(), "モモ".to_string()),
+                    LyrianToken::new("の".to_string(), "ノ".to_string(), "ノ".to_string()),
+                    LyrianToken::new("うち".to_string(), "ウチ".to_string(), "ウチ".to_string()),
+                ];
+                assert_eq!(tokens, expected)
+            }
+            Err(msg) => panic!("{}", msg),
+        }
+    }
+
+    #[test]
+    fn get_word_length_on_mora() {
+        let token = LyrianToken::new(
+            "大空".to_string(),
+            "オオゾラ".to_string(),
+            "オーゾラ".to_string(),
+        );
+        assert_eq!(token.length(false, false, false), 4)
+    }
+
+    #[test]
+    fn get_word_length_on_syllable() {
+        let token = LyrianToken::new(
+            "大空".to_string(),
+            "オオゾラ".to_string(),
+            "オーゾラ".to_string(),
+        );
+        assert_eq!(token.length(true, false, false), 3)
+    }
+
+    #[test]
+    #[ignore]
+    fn get_word_length_that_has_voiceless_sound() {
+        let token = LyrianToken::new("桜".to_string(), "サクラ".to_string(), "サクラ".to_string());
+        assert_eq!(token.length(false, true, false), 2)
+    }
+
+    #[test]
+    #[ignore]
+    fn get_word_length_that_has_smooth_vowel_sound() {
+        let token = LyrianToken::new(
+            "赤井".to_string(),
+            "アカイ".to_string(),
+            "アカイ".to_string(),
+        );
+        assert_eq!(token.length(false, false, true), 2)
+    }
+}

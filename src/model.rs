@@ -6,7 +6,7 @@ use crate::morphological_analysis::{tokenize, LyrianToken};
 use serde::{Deserialize, Serialize};
 
 /// The structure of generating lyric.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct LyrianModel {
     markov: MarkovModel<LyrianToken>,
 }
@@ -84,5 +84,18 @@ impl<'a> LyrianModel {
             Ok(v) => Ok(v),
             Err(e) => Err(e.to_string()),
         }
+    }
+}
+
+#[cfg(test)]
+mod model_test {
+    use crate::model::LyrianModel;
+
+    #[test]
+    fn build_same_model_from_json() {
+        let str_model = LyrianModel::from_str("もも").unwrap();
+        let json = str_model.to_json_str().unwrap();
+        let json_model = LyrianModel::from_json(&*json).unwrap();
+        assert_eq!(json_model, str_model)
     }
 }

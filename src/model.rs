@@ -32,20 +32,14 @@ impl<'a> LyrianModel {
         }
     }
 
-    pub fn generate_lyric(
-        &mut self,
-        lyric_len: usize,
-        syllable: bool,
-        voiceless: bool,
-        smooth: bool,
-    ) -> Result<Lyric, String> {
+    pub fn generate_lyric(&mut self, lyric_len: usize, syllable: bool) -> Result<Lyric, String> {
         for _ in 0..64 {
             let mut lyric = Lyric::new(Vec::new());
             for _ in 0..64 {
                 lyric.add_token(self.markov.next().clone());
-                if lyric_len < lyric.length(syllable, voiceless, smooth) {
+                if lyric_len < lyric.length(syllable) {
                     break;
-                } else if lyric_len == lyric.length(syllable, voiceless, smooth) {
+                } else if lyric_len == lyric.length(syllable) {
                     return Ok(lyric);
                 }
             }

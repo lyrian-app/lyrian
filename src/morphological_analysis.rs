@@ -20,7 +20,7 @@ impl LyrianToken {
         }
     }
 
-    pub fn length(&self, syllable: bool, voiceless: bool, smooth: bool) -> usize {
+    pub fn length(&self, syllable: bool) -> usize {
         if self.mora == String::from("unknown") {
             return 0;
         }
@@ -31,13 +31,13 @@ impl LyrianToken {
             sound_len = self.syllable_len();
         }
 
-        if voiceless {
-            sound_len -= self.count_voiceless();
-        }
+        // if voiceless {
+        //     sound_len -= self.count_voiceless();
+        // }
 
-        if smooth {
-            sound_len -= self.count_smooth();
-        }
+        // if smooth {
+        //     sound_len -= self.count_smooth();
+        // }
 
         sound_len
     }
@@ -56,15 +56,15 @@ impl LyrianToken {
         length
     }
 
-    fn count_voiceless(&self) -> usize {
-        // TODO: Processing to calc number of voiceless sound
-        0
-    }
+    // fn count_voiceless(&self) -> usize {
+    //     // TODO: Processing to calc number of voiceless sound
+    //     0
+    // }
 
-    fn count_smooth(&self) -> usize {
-        // TODO: Processing to calc number of smooth vowel sound
-        0
-    }
+    // fn count_smooth(&self) -> usize {
+    //     // TODO: Processing to calc number of smooth vowel sound
+    //     0
+    // }
 }
 
 pub fn tokenize(contents: &str) -> Result<Vec<LyrianToken>, String> {
@@ -134,7 +134,7 @@ mod morphological_analysis_test {
             "オオゾラ".to_string(),
             "オーゾラ".to_string(),
         );
-        assert_eq!(token.length(false, false, false), 4)
+        assert_eq!(token.length(false), 4)
     }
 
     #[test]
@@ -144,24 +144,22 @@ mod morphological_analysis_test {
             "オオゾラ".to_string(),
             "オーゾラ".to_string(),
         );
-        assert_eq!(token.length(true, false, false), 3)
+        assert_eq!(token.length(true), 3)
     }
 
-    #[test]
-    #[ignore]
-    fn get_word_length_that_has_voiceless_sound() {
-        let token = LyrianToken::new("桜".to_string(), "サクラ".to_string(), "サクラ".to_string());
-        assert_eq!(token.length(false, true, false), 2)
-    }
+    // #[test]
+    // fn get_word_length_that_has_voiceless_sound() {
+    //     let token = LyrianToken::new("桜".to_string(), "サクラ".to_string(), "サクラ".to_string());
+    //     assert_eq!(token.length(false, true, false), 2)
+    // }
 
-    #[test]
-    #[ignore]
-    fn get_word_length_that_has_smooth_vowel_sound() {
-        let token = LyrianToken::new(
-            "赤井".to_string(),
-            "アカイ".to_string(),
-            "アカイ".to_string(),
-        );
-        assert_eq!(token.length(false, false, true), 2)
-    }
+    // #[test]
+    // fn get_word_length_that_has_smooth_vowel_sound() {
+    //     let token = LyrianToken::new(
+    //         "赤井".to_string(),
+    //         "アカイ".to_string(),
+    //         "アカイ".to_string(),
+    //     );
+    //     assert_eq!(token.length(false, false, true), 2)
+    // }
 }

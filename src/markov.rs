@@ -44,7 +44,7 @@ where
             pre_index = Some(cur_index);
         }
 
-        let mut state_space = vec![vec![1.0; elements_len]; elements_len];
+        let mut state_space = vec![vec![0.0; elements_len]; elements_len];
         for (i, vector) in state_freq.iter().enumerate() {
             let row_sum = vector.iter().fold(0, |acc, cur| acc + cur);
             let mut cumulative_p = 0.0;
@@ -61,12 +61,26 @@ where
 
     pub fn next(&mut self) -> &T {
         let mut rng = rand::thread_rng();
-        let f = rng.gen::<f32>();
-        let row_index = if self.pre_index != self.elements.len() {
-            self.pre_index
-        } else {
-            rng.gen::<usize>() % self.elements.len()
+
+        let row_index = {
+            let mut i;
+            loop {
+                if self.pre_index != self.elements.len() {
+                    i = self.pre_index;
+                } else {
+                    i = rng.gen::<usize>() % self.elements.len()
+                }
+                let row_sum = self.state_space[i].iter().fold(0.0, |acc, cur| acc + cur);
+                if row_sum == 0.0 {
+                    self.initialize();
+                } else {
+                    break;
+                }
+            }
+            i
         };
+
+        let f = rng.gen::<f32>();
         let cur_index: usize = {
             let mut res = self.state_space[row_index].len() - 1;
             for (i, p) in self.state_space[row_index].iter().enumerate() {

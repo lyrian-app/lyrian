@@ -1,6 +1,10 @@
 # Lyrian
 
+[![lyrian](https://github.com/LyrianBot/lyrian/actions/workflows/lyrian.yml/badge.svg)](https://github.com/LyrianBot/lyrian/actions/workflows/lyrian.yml)
+
 A Rust crate to generate Japanese lyrics with Markov chain.
+
+**Issue は日本語でも構いません。**
 
 ## Usage
 

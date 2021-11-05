@@ -4,20 +4,7 @@ use lindera::tokenizer::Tokenizer;
 use serde::{Deserialize, Serialize};
 use std::mem;
 
-use crate::chars::{LOWER_CASE, SYLLABLE_CHARS, SYMBOLS};
-
-/// Returns the counts of duplicated elements in two [`Vec<T>`].
-fn dup_num<T: std::cmp::PartialEq>(list1: &Vec<T>, list2: &Vec<T>) -> usize {
-    let mut num = 0;
-    for i in list1 {
-        for j in list2 {
-            if *i == *j {
-                num += 1;
-            }
-        }
-    }
-    num
-}
+use crate::chars::*;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Ord, PartialOrd, PartialEq)]
 /// Token structure

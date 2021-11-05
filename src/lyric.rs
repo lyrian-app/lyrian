@@ -1,5 +1,6 @@
 //! A module related to the information of the generated lyric.
 
+use crate::chars::{dup_num, SYMBOLS};
 use crate::morphological_analysis::LyrianToken;
 
 /// Lyric structure
@@ -27,9 +28,14 @@ impl Lyric {
 
     /// Join the words of [`Vec<LyrianToken>`].
     pub fn join(&self) -> String {
-        self.tokens
-            .iter()
-            .fold(String::from(""), |acc, cur| format!("{}{}", acc, cur.word))
+        self.tokens.iter().fold(String::from(""), |acc, cur| {
+            let count = dup_num(&cur.mora.chars().collect(), &SYMBOLS.to_vec());
+            if count == 0 {
+                format!("{}{}", acc, cur.word)
+            } else {
+                acc
+            }
+        })
     }
 }
 

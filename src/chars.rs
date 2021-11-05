@@ -1,5 +1,18 @@
 //! A module that defines the characters associated with the number of pronunciations.
 
+/// Returns the counts of duplicated elements in two [`Vec<T>`].
+pub fn dup_num<T: std::cmp::PartialEq>(list1: &Vec<T>, list2: &Vec<T>) -> usize {
+    let mut num = 0;
+    for i in list1 {
+        for j in list2 {
+            if *i == *j {
+                num += 1;
+            }
+        }
+    }
+    num
+}
+
 /// Characters that are ignored when counting pronunciation by syllable unit.
 pub const SYLLABLE_CHARS: [char; 3] = ['ン', 'ッ', 'ー'];
 

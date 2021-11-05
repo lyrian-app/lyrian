@@ -1,6 +1,5 @@
 use crate::morphological_analysis::LyrianToken;
 
-#[derive(Debug)]
 pub struct Lyric {
     tokens: Vec<LyrianToken>,
 }

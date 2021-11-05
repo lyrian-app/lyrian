@@ -3,7 +3,7 @@ use crate::markov::MarkovModel;
 use crate::morphological_analysis::{tokenize, LyrianToken};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize)]
 pub struct LyrianModel {
     markov: MarkovModel<LyrianToken>,
 }

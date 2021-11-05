@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Markov model structure
 pub struct MarkovModel<T> {
     elements: Vec<T>,
-    state_space: Vec<Vec<f32>>,
+    cm_dist: Vec<Vec<f32>>, // cumulative distribution of transition probabilities
     pre_index: usize,
 }
 
@@ -20,10 +20,10 @@ where
     T: PartialEq,
 {
     /// Creates a new instance of [`MarkovModel`].
-    fn new(elements: Vec<T>, state_space: Vec<Vec<f32>>, pre_index: usize) -> MarkovModel<T> {
+    fn new(elements: Vec<T>, cm_dist: Vec<Vec<f32>>, pre_index: usize) -> MarkovModel<T> {
         MarkovModel {
             elements: elements,
-            state_space: state_space,
+            cm_dist: cm_dist,
             pre_index: pre_index,
         }
     }
@@ -49,20 +49,19 @@ where
             pre_index = Some(cur_index);
         }
 
-        let mut state_space = vec![vec![0.0; elements_len]; elements_len];
+        let mut cm_dist = vec![vec![0.0; elements_len]; elements_len];
         for (i, vector) in state_freq.iter().enumerate() {
             let row_sum = vector.iter().fold(0, |acc, cur| acc + cur);
             let mut cumulative_p = 0.0;
-            // calc state_space by cumulative distribution function
             for (j, count) in vector.iter().enumerate() {
                 if row_sum != 0 {
                     cumulative_p = cumulative_p + (*count as f32 / row_sum as f32);
-                    state_space[i][j] = cumulative_p;
+                    cm_dist[i][j] = cumulative_p;
                 }
             }
         }
 
-        MarkovModel::new(non_dup_elements, state_space, elements_len)
+        MarkovModel::new(non_dup_elements, cm_dist, elements_len)
     }
 
     /// Returns the next possible element.
@@ -82,7 +81,7 @@ where
                 } else {
                     i = rng.gen::<usize>() % self.elements.len()
                 }
-                let row_sum = self.state_space[i].iter().fold(0.0, |acc, cur| acc + cur);
+                let row_sum = self.cm_dist[i].iter().fold(0.0, |acc, cur| acc + cur);
                 if row_sum == 0.0 {
                     self.initialize();
                 } else {
@@ -94,8 +93,8 @@ where
 
         let f = rng.gen::<f32>();
         let cur_index: usize = {
-            let mut res = self.state_space[row_index].len() - 1;
-            for (i, p) in self.state_space[row_index].iter().enumerate() {
+            let mut res = self.cm_dist[row_index].len() - 1;
+            for (i, p) in self.cm_dist[row_index].iter().enumerate() {
                 if f <= *p {
                     res = i;
                     break;
@@ -127,7 +126,7 @@ mod markov_test {
 
         let expected = MarkovModel {
             elements: vec!["うち", "すもも", "の", "も", "もも"],
-            state_space: vec![
+            cm_dist: vec![
                 vec![0.0, 0.0, 0.0, 0.0, 0.0],
                 vec![0.0, 0.0, 0.0, 1.0, 1.0],
                 vec![1.0, 1.0, 1.0, 1.0, 1.0],

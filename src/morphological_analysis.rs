@@ -169,11 +169,11 @@ mod morphological_analysis_test {
     #[test]
     fn get_length_of_word_that_has_lower_case() {
         let token = LyrianToken::new(
-            "ラミィ".to_string(),
-            "ラミィ".to_string(),
-            "ラミィ".to_string(),
+            "ジョバンニ".to_string(),
+            "ジョバンニ".to_string(),
+            "ジョバンニ".to_string(),
         );
-        assert_eq!(token.length(false), 2)
+        assert_eq!(token.length(false), 4)
     }
 
     #[test]
@@ -191,9 +191,9 @@ mod morphological_analysis_test {
     // #[test]
     // fn get_length_of_word_that_has_smooth_vowel_sound() {
     //     let token = LyrianToken::new(
-    //         "赤井".to_string(),
-    //         "アカイ".to_string(),
-    //         "アカイ".to_string(),
+    //         "だいたい".to_string(),
+    //         "ダイタイ".to_string(),
+    //         "ダイタイ".to_string(),
     //     );
     //     assert_eq!(token.length(false, false, true), 2)
     // }

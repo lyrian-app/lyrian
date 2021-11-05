@@ -139,4 +139,31 @@ mod markov_test {
 
         assert_eq!(actual, expected)
     }
+
+    #[test]
+    fn check_distribution() {
+        let mut markov_model = MarkovModel::from(vec!["りんご", "と", "ばなな", "と", "りんご"]);
+
+        let mut count = 0;
+        for _ in 0..100 {
+            let mut elements = [""; 100_000];
+            for j in 0..100_000 {
+                elements[j] = markov_model.next();
+            }
+
+            let a = elements
+                .iter()
+                .fold(0, |acc, cur| if *cur == "りんご" { acc + 1 } else { acc })
+                as f32;
+            let b = elements
+                .iter()
+                .fold(0, |acc, cur| if *cur == "ばなな" { acc + 1 } else { acc })
+                as f32;
+            if (b * 0.95 < a && a < b * 1.05) || (a * 0.95 < b && b < a * 1.05) {
+                count += 1;
+            }
+        }
+
+        assert!(95 <= count)
+    }
 }

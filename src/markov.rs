@@ -1,7 +1,7 @@
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct MarkovModel<T> {
     elements: Vec<T>,
     state_space: Vec<Vec<f32>>,
@@ -86,5 +86,29 @@ where
 
     pub fn initialize(&mut self) {
         self.pre_index = self.elements.len();
+    }
+}
+
+#[cfg(test)]
+mod markov_test {
+    use crate::markov::MarkovModel;
+
+    #[test]
+    fn make_markov_model() {
+        let actual = MarkovModel::from(vec!["すもも", "も", "もも", "も", "もも", "の", "うち"]);
+
+        let expected = MarkovModel {
+            elements: vec!["うち", "すもも", "の", "も", "もも"],
+            state_space: vec![
+                vec![0.0, 0.0, 0.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0],
+                vec![1.0, 1.0, 1.0, 1.0, 1.0],
+                vec![0.0, 0.0, 0.0, 0.0, 1.0],
+                vec![0.0, 0.0, 0.5, 1.0, 1.0],
+            ],
+            pre_index: 5,
+        };
+
+        assert_eq!(actual, expected)
     }
 }

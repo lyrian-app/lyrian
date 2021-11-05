@@ -20,14 +20,6 @@ impl LyrianToken {
         }
     }
 
-    pub fn empty_token() -> LyrianToken {
-        LyrianToken {
-            word: String::from(""),
-            mora: String::from(""),
-            syllable: String::from(""),
-        }
-    }
-
     pub fn length(&self, syllable: bool, voiceless: bool, smooth: bool) -> usize {
         if self.mora == String::from("unknown") {
             return 0;

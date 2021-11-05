@@ -194,13 +194,13 @@ mod morphological_analysis_test {
     }
 
     // #[test]
-    // fn get_word_length_that_has_voiceless_sound() {
+    // fn get_length_of_word_that_has_voiceless_sound() {
     //     let token = LyrianToken::new("桜".to_string(), "サクラ".to_string(), "サクラ".to_string());
     //     assert_eq!(token.length(false, true, false), 2)
     // }
 
     // #[test]
-    // fn get_word_length_that_has_smooth_vowel_sound() {
+    // fn get_length_of_word_that_has_smooth_vowel_sound() {
     //     let token = LyrianToken::new(
     //         "赤井".to_string(),
     //         "アカイ".to_string(),

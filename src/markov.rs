@@ -126,43 +126,46 @@ mod markov_test {
 
         let expected = MarkovModel {
             elements: vec!["うち", "すもも", "の", "も", "もも"],
-            cm_dist: vec![
-                vec![0.0, 0.0, 0.0, 0.0, 0.0],
-                vec![0.0, 0.0, 0.0, 1.0, 1.0],
-                vec![1.0, 1.0, 1.0, 1.0, 1.0],
-                vec![0.0, 0.0, 0.0, 0.0, 1.0],
-                vec![0.0, 0.0, 0.5, 1.0, 1.0],
+            wa_table: vec![
+                vec![
+                    [(4, 0), (0, 0)],
+                    [(3, 0), (0, 0)],
+                    [(2, 0), (0, 0)],
+                    [(1, 0), (0, 0)],
+                    [(0, 0), (0, 0)],
+                ],
+                vec![
+                    [(4, 0), (3, 1)],
+                    [(2, 0), (3, 1)],
+                    [(1, 0), (3, 1)],
+                    [(0, 0), (3, 1)],
+                    [(3, 1), (0, 0)],
+                ],
+                vec![
+                    [(4, 0), (0, 1)],
+                    [(3, 0), (0, 1)],
+                    [(2, 0), (0, 1)],
+                    [(1, 0), (0, 1)],
+                    [(0, 1), (0, 0)],
+                ],
+                vec![
+                    [(3, 0), (4, 4)],
+                    [(2, 0), (4, 4)],
+                    [(1, 0), (4, 4)],
+                    [(0, 0), (4, 4)],
+                    [(4, 4), (0, 0)],
+                ],
+                vec![
+                    [(4, 0), (3, 4)],
+                    [(1, 0), (3, 4)],
+                    [(3, 2), (2, 2)],
+                    [(0, 0), (2, 4)],
+                    [(2, 4), (0, 0)],
+                ],
             ],
             pre_index: 5,
         };
 
         assert_eq!(actual, expected)
-    }
-
-    #[test]
-    fn check_distribution() {
-        let mut markov_model = MarkovModel::from(vec!["りんご", "と", "ばなな", "と", "りんご"]);
-
-        let mut count = 0;
-        for _ in 0..100 {
-            let mut elements = [""; 100_000];
-            for j in 0..100_000 {
-                elements[j] = markov_model.next();
-            }
-
-            let a = elements
-                .iter()
-                .fold(0, |acc, cur| if *cur == "りんご" { acc + 1 } else { acc })
-                as f32;
-            let b = elements
-                .iter()
-                .fold(0, |acc, cur| if *cur == "ばなな" { acc + 1 } else { acc })
-                as f32;
-            if (b * 0.95 < a && a < b * 1.05) || (a * 0.95 < b && b < a * 1.05) {
-                count += 1;
-            }
-        }
-
-        assert!(95 <= count)
     }
 }

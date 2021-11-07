@@ -66,3 +66,22 @@ impl WalkerBox {
         WalkerBox::new(aliases, tholds, mean)
     }
 }
+
+#[cfg(test)]
+mod walkers_alias_method_test {
+    use crate::walkers_alias_method::WalkerBox;
+
+    #[test]
+    fn make_box() {
+        let index_weights = vec![2, 7, 9, 2, 4, 8, 1, 3, 6, 5];
+        let w_box = WalkerBox::from_index_weights(index_weights);
+
+        let expected = WalkerBox::new(
+            vec![2, 1, 1, 2, 2, 2, 5, 9, 5, 8],
+            vec![1269, 2209, 1081, 1269, 329, 235, 1739, 799, 47, 658],
+            2209,
+        );
+
+        assert_eq!(w_box, expected)
+    }
+}

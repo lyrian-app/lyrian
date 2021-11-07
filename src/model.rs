@@ -57,14 +57,14 @@ impl<'a> LyrianModel {
     ///     - Will not count smoothly connected vowel sounds.
     ///     - For example, the "イ" in "ダイチ" will be counted as one sound
     ///       "ダイ".
-    pub fn generate_lyric(&mut self, lyric_len: usize, syllable: bool) -> Result<Lyric, String> {
+    pub fn generate_lyric(&mut self, num_of_notes: usize, syllable: bool) -> Result<Lyric, String> {
         for _ in 0..64 {
             let mut lyric = Lyric::new(Vec::new());
             for _ in 0..64 {
                 lyric.add_token(self.markov.next().clone());
-                if lyric_len < lyric.length(syllable) {
+                if num_of_notes < lyric.length(syllable) {
                     break;
-                } else if lyric_len == lyric.length(syllable) {
+                } else if num_of_notes == lyric.length(syllable) {
                     return Ok(lyric);
                 }
             }

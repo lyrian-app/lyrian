@@ -31,20 +31,81 @@ impl WalkerBox {
 
 #[cfg(test)]
 mod walkers_alias_method_test {
-    use crate::walkers_alias_method::{WalkerBox, WalkerBoxBuilder};
+    use crate::builder::WalkerBoxBuilder;
 
     #[test]
-    fn make_box() {
-        let index_weights = vec![2, 7, 9, 2, 4, 8, 1, 3, 6, 5];
+    fn unweighted_random_sampling() {
+        let index_weights = vec![1, 1, 1, 1];
         let mut builder = WalkerBoxBuilder::new(index_weights);
         let w_box = builder.build();
 
-        let expected = WalkerBox::new(
-            vec![2, 1, 1, 2, 2, 2, 5, 9, 5, 8],
-            vec![1269, 2209, 1081, 1269, 329, 235, 1739, 799, 47, 658],
-            2209,
-        );
+        const N: usize = 100_000;
+        const P: f32 = 0.25;
+        const EXPT: f32 = N as f32 * P;
 
-        assert_eq!(w_box, expected)
+        let idxs = (0..N)
+            .map(|_| w_box.next())
+            .collect::<Vec<usize>>()
+            .to_vec();
+
+        let i_0 = idxs
+            .iter()
+            .fold(0, |acc, cur| if *cur == 0 { acc + 1 } else { acc }) as f32;
+        let i_1 = idxs
+            .iter()
+            .fold(0, |acc, cur| if *cur == 1 { acc + 1 } else { acc }) as f32;
+        let i_2 = idxs
+            .iter()
+            .fold(0, |acc, cur| if *cur == 2 { acc + 1 } else { acc }) as f32;
+        let i_3 = idxs
+            .iter()
+            .fold(0, |acc, cur| if *cur == 3 { acc + 1 } else { acc }) as f32;
+
+        assert!(
+            (EXPT * 0.95 < i_0 && i_0 < EXPT * 1.05)
+                && (EXPT * 0.95 < i_1 && i_1 < EXPT * 1.05)
+                && (EXPT * 0.95 < i_2 && i_2 < EXPT * 1.05)
+                && (EXPT * 0.95 < i_3 && i_3 < EXPT * 1.05)
+        )
+    }
+
+    #[test]
+    fn weighted_random_sampling() {
+        let index_weights = vec![1, 2, 3, 4];
+        let mut builder = WalkerBoxBuilder::new(index_weights);
+        let w_box = builder.build();
+
+        const N: usize = 100_000;
+        const EXPT: [f32; 4] = [
+            N as f32 * 0.1,
+            N as f32 * 0.2,
+            N as f32 * 0.3,
+            N as f32 * 0.4,
+        ];
+
+        let idxs = (0..N)
+            .map(|_| w_box.next())
+            .collect::<Vec<usize>>()
+            .to_vec();
+
+        let i_0 = idxs
+            .iter()
+            .fold(0, |acc, cur| if *cur == 0 { acc + 1 } else { acc }) as f32;
+        let i_1 = idxs
+            .iter()
+            .fold(0, |acc, cur| if *cur == 1 { acc + 1 } else { acc }) as f32;
+        let i_2 = idxs
+            .iter()
+            .fold(0, |acc, cur| if *cur == 2 { acc + 1 } else { acc }) as f32;
+        let i_3 = idxs
+            .iter()
+            .fold(0, |acc, cur| if *cur == 3 { acc + 1 } else { acc }) as f32;
+
+        assert!(
+            (EXPT[0] * 0.95 < i_0 && i_0 < EXPT[0] * 1.05)
+                && (EXPT[1] * 0.95 < i_1 && i_1 < EXPT[1] * 1.05)
+                && (EXPT[2] * 0.95 < i_2 && i_2 < EXPT[2] * 1.05)
+                && (EXPT[3] * 0.95 < i_3 && i_3 < EXPT[3] * 1.05)
+        )
     }
 }

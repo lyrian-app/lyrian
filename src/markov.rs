@@ -131,26 +131,6 @@ where
 #[cfg(test)]
 mod markov_test {
     use crate::markov::MarkovModel;
-    use crate::walkers_alias_method::WalkerBox;
-
-    #[test]
-    fn make_markov_model() {
-        let actual = MarkovModel::from(vec!["すもも", "も", "もも", "も", "もも", "の", "うち"]);
-
-        let expected = MarkovModel {
-            state_space: vec!["うち", "すもも", "の", "も", "もも"],
-            walker_boxes: vec![
-                WalkerBox::new(vec![0, 1, 2, 3, 4], vec![0, 0, 0, 0, 0], 0),
-                WalkerBox::new(vec![3, 3, 3, 3, 3], vec![1, 1, 1, 1, 1], 1),
-                WalkerBox::new(vec![0, 0, 0, 0, 0], vec![1, 1, 1, 1, 1], 1),
-                WalkerBox::new(vec![4, 4, 4, 4, 4], vec![4, 4, 4, 4, 4], 4),
-                WalkerBox::new(vec![2, 3, 2, 2, 3], vec![4, 4, 4, 2, 4], 4),
-            ],
-            prev_index: 5,
-        };
-
-        assert_eq!(actual, expected)
-    }
 
     #[test]
     fn check_convergence_in_probability() {

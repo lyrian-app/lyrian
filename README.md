@@ -27,7 +27,7 @@ fn main() {
 
     // Generate lyric.
     let lyric_1 = model.generate_lyric(7, true).unwrap();
-    let lyric_2 = model.generate_lyric(7, false).unwrap();
+    let lyric_2 = model.generate_lyric(10, false).unwrap();
     println!("syllable: {}", lyric_1.join());
     println!("mora    : {}", lyric_2.join());
 
@@ -56,7 +56,7 @@ fn main() {
 
     // Generate lyric.
     let lyric_1 = model.generate_lyric(7, true).unwrap();
-    let lyric_2 = model.generate_lyric(7, false).unwrap();
+    let lyric_2 = model.generate_lyric(10, false).unwrap();
     println!("syllable: {}", lyric_1.join());
     println!("mora    : {}", lyric_2.join());
 }

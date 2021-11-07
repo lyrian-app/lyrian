@@ -123,29 +123,24 @@ where
 #[cfg(test)]
 mod markov_test {
     use crate::markov::MarkovModel;
+    use crate::walkers_alias_method::WalkerBox;
 
     #[test]
-    fn check_convergence_in_probability() {
-        let mut markov_model = MarkovModel::from(vec!["りんご", "と", "ばなな", "と", "りんご"]);
+    fn make_markov_model() {
+        let actual = MarkovModel::from(vec!["すもも", "も", "もも", "も", "もも", "の", "うち"]);
 
-        const N: usize = 100_000;
-        const P: f32 = 0.25;
-        const EXPT: f32 = N as f32 * P;
+        let expected = MarkovModel {
+            state_space: vec!["うち", "すもも", "の", "も", "もも"],
+            walker_boxes: vec![
+                WalkerBox::new(vec![0, 1, 2, 3, 4], vec![0, 0, 0, 0, 0], 0),
+                WalkerBox::new(vec![3, 3, 3, 3, 3], vec![1, 1, 1, 1, 1], 1),
+                WalkerBox::new(vec![0, 0, 0, 0, 0], vec![1, 1, 1, 1, 1], 1),
+                WalkerBox::new(vec![4, 4, 4, 4, 4], vec![4, 4, 4, 4, 4], 4),
+                WalkerBox::new(vec![2, 3, 2, 2, 3], vec![4, 4, 4, 2, 4], 4),
+            ],
+            prev_index: 5,
+        };
 
-        let mut elements = [""; N];
-        for j in 0..N {
-            elements[j] = markov_model.next();
-        }
-
-        let a = elements
-            .iter()
-            .fold(0, |acc, cur| if *cur == "りんご" { acc + 1 } else { acc })
-            as f32;
-        let b = elements
-            .iter()
-            .fold(0, |acc, cur| if *cur == "ばなな" { acc + 1 } else { acc })
-            as f32;
-
-        assert!((EXPT * 0.95 < a && a < EXPT * 1.05) && (EXPT * 0.95 < b && b < EXPT * 1.05))
+        assert_eq!(actual, expected)
     }
 }

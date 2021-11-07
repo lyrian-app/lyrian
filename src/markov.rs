@@ -86,18 +86,8 @@ where
 
     /// Returns the index of the next output state.
     fn next_elem_index(&mut self) -> usize {
-        let mut rng = rand::thread_rng();
-
         let row = self.prev_elem_index();
-        let col = rng.gen::<usize>() % self.state_space.len();
-
-        let max = self.walker_boxes[row].max_weight;
-        let r = rng.gen_range(0..max);
-        if r < self.walker_boxes[row].tholds[col] {
-            self.walker_boxes[row].aliases[col] as usize
-        } else {
-            col
-        }
+        self.walker_boxes[row].next()
     }
 
     /// Returns the index of the previous output state.

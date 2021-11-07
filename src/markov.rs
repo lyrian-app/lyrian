@@ -1,4 +1,4 @@
-//! Markov chain and its model generation.
+//! Model generation of Markov chain.
 
 use crate::walkers_alias_method::builder::WalkerTableBuilder;
 use crate::walkers_alias_method::table::WalkerTable;

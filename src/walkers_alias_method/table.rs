@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 ///    does not, the value of `aliases[i]` (which means the alias to another
 ///    index) is output.
 ///
-/// The more likely a particular index is to be output, the more of its value
+/// The more likely a particular index is to be output, the more of the value
 /// will be included in `aliases`.
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct WalkerTable {

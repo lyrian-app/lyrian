@@ -9,11 +9,14 @@ pub struct WalkerTableBuilder {
     /// The larger the value, the more likely the corresponding index will be
     /// output.
     ///
-    /// For example, if this value is `[2, 1, 7, 0]`, the output probabilities
+    /// For example, if this value is `vec![2, 1, 7, 0]`, the output probabilities
     /// for each index are 0.2, 0.1, 0.7 and 0.
     ///
-    /// If a weight value is 0, the index will not be output. In other words,
-    /// the index 3 will not be output in the above cases.
+    /// If a weight value is 0, the corresponding index will not be output. In
+    /// other words, the index 3 will not be output in the above cases.
+    ///
+    /// The reason why the type is [`u32`] is because it is non-negative, and
+    /// can counter arithmetic error of floating point.
     index_weights: Vec<u32>,
 }
 
@@ -83,8 +86,7 @@ impl WalkerTableBuilder {
         (aliases, tholds)
     }
 
-    /// Divide the values of `index_weights` based on the mean of the
-    /// weights.
+    /// Divide the values of `index_weights` based on the mean of them.
     ///
     /// The tail value is a weight and head is its index.
     fn separate_weight(&self) -> (Vec<(usize, u32)>, Vec<(usize, u32)>) {

@@ -2,15 +2,15 @@ use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct WalkerBox {
+pub struct WalkerTable {
     pub aliases: Vec<u32>,
     pub tholds: Vec<u32>,
     pub max_weight: u32,
 }
 
-impl WalkerBox {
-    pub fn new(aliases: Vec<u32>, tholds: Vec<u32>, max_weight: u32) -> WalkerBox {
-        WalkerBox {
+impl WalkerTable {
+    pub fn new(aliases: Vec<u32>, tholds: Vec<u32>, max_weight: u32) -> WalkerTable {
+        WalkerTable {
             aliases: aliases,
             tholds: tholds,
             max_weight: max_weight,
@@ -31,20 +31,20 @@ impl WalkerBox {
 
 #[cfg(test)]
 mod walkers_alias_method_test {
-    use crate::builder::WalkerBoxBuilder;
+    use crate::builder::WalkerTableBuilder;
 
     #[test]
     fn unweighted_random_sampling() {
         let index_weights = vec![1, 1, 1, 1];
-        let mut builder = WalkerBoxBuilder::new(index_weights);
-        let w_box = builder.build();
+        let mut builder = WalkerTableBuilder::new(index_weights);
+        let wa_table = builder.build();
 
         const N: usize = 100_000;
         const P: f32 = 0.25;
         const EXPT: f32 = N as f32 * P;
 
         let idxs = (0..N)
-            .map(|_| w_box.next())
+            .map(|_| wa_table.next())
             .collect::<Vec<usize>>()
             .to_vec();
 
@@ -72,8 +72,8 @@ mod walkers_alias_method_test {
     #[test]
     fn weighted_random_sampling() {
         let index_weights = vec![1, 2, 3, 4];
-        let mut builder = WalkerBoxBuilder::new(index_weights);
-        let w_box = builder.build();
+        let mut builder = WalkerTableBuilder::new(index_weights);
+        let wa_table = builder.build();
 
         const N: usize = 100_000;
         const EXPT: [f32; 4] = [
@@ -84,7 +84,7 @@ mod walkers_alias_method_test {
         ];
 
         let idxs = (0..N)
-            .map(|_| w_box.next())
+            .map(|_| wa_table.next())
             .collect::<Vec<usize>>()
             .to_vec();
 

@@ -1,17 +1,17 @@
-use crate::walkers_alias_method::WalkerBox;
+use crate::walkers_alias_method::WalkerTable;
 
-pub struct WalkerBoxBuilder {
+pub struct WalkerTableBuilder {
     index_weights: Vec<u32>,
 }
 
-impl WalkerBoxBuilder {
-    pub fn new(index_weights: Vec<u32>) -> WalkerBoxBuilder {
-        WalkerBoxBuilder {
+impl WalkerTableBuilder {
+    pub fn new(index_weights: Vec<u32>) -> WalkerTableBuilder {
+        WalkerTableBuilder {
             index_weights: index_weights,
         }
     }
 
-    pub fn build(&mut self) -> WalkerBox {
+    pub fn build(&mut self) -> WalkerTable {
         let table_len = self.index_weights.len();
 
         self.index_weights = self
@@ -21,9 +21,9 @@ impl WalkerBoxBuilder {
             .collect::<Vec<u32>>()
             .to_vec();
 
-        let (aliases, tholds) = self.calc_box();
+        let (aliases, tholds) = self.calc_table();
 
-        WalkerBox::new(aliases, tholds, self.mean())
+        WalkerTable::new(aliases, tholds, self.mean())
     }
 
     fn sum(&self) -> u32 {
@@ -34,7 +34,7 @@ impl WalkerBoxBuilder {
         self.sum() / self.index_weights.len() as u32
     }
 
-    fn calc_box(&self) -> (Vec<u32>, Vec<u32>) {
+    fn calc_table(&self) -> (Vec<u32>, Vec<u32>) {
         let table_len = self.index_weights.len();
         let (mut below_vec, mut above_vec) = self.separate_weights();
         let mean = self.mean();
@@ -81,21 +81,21 @@ impl WalkerBoxBuilder {
 
 #[cfg(test)]
 mod builder_test {
-    use crate::builder::WalkerBoxBuilder;
-    use crate::walkers_alias_method::WalkerBox;
+    use crate::builder::WalkerTableBuilder;
+    use crate::walkers_alias_method::WalkerTable;
 
     #[test]
-    fn make_box() {
+    fn make_table() {
         let index_weights = vec![2, 7, 9, 2, 4, 8, 1, 3, 6, 5];
-        let mut builder = WalkerBoxBuilder::new(index_weights);
-        let w_box = builder.build();
+        let mut builder = WalkerTableBuilder::new(index_weights);
+        let w_table = builder.build();
 
-        let expected = WalkerBox::new(
+        let expected = WalkerTable::new(
             vec![2, 1, 1, 2, 2, 2, 5, 9, 5, 8],
             vec![1269, 2209, 1081, 1269, 329, 235, 1739, 799, 47, 658],
             2209,
         );
 
-        assert_eq!(w_box, expected)
+        assert_eq!(w_table, expected)
     }
 }

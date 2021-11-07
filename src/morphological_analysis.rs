@@ -6,8 +6,8 @@ use std::mem;
 
 use crate::chars::*;
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, Ord, PartialOrd, PartialEq)]
 /// Token structure
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, Ord, PartialOrd, PartialEq)]
 pub struct LyrianToken {
     pub word: String,
     pub mora: String,
@@ -34,9 +34,11 @@ impl LyrianToken {
     ///     - Will not count voiceless sounds, like "ク" in "サクラ".
     /// - smoothly: [`bool`] (unimplemented)
     ///     - Will not count smoothly connected vowel sounds.
-    ///     - For example, the "イ" in "ダイチ" will be counted as one sound "ダイ".
+    ///     - For example, the "イ" in "ダイチ" will be counted as one sound
+    ///       "ダイ".
     ///
-    /// If you set `false` to all the arguments, you will get the number by mora unit.
+    /// If you set `false` to all the arguments, you will get the number by
+    /// mora unit.
     pub fn length(&self, syllable: bool) -> usize {
         if self.mora == String::from("unknown") {
             return 0;

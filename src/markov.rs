@@ -5,8 +5,8 @@ use crate::walkers_alias_method::table::WalkerTable;
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
 /// Markov model structure
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct MarkovModel<T> {
     /// The set of possible states of the model.
     state_space: Vec<T>,
@@ -71,8 +71,8 @@ where
     /// The first state will be determined randomly, and the next one will be chosen
     /// by its state space.
     ///
-    /// If you want to initialize the chain of states, use [`initialize()`](#method.initialize)
-    /// methods.
+    /// If you want to initialize the chain of states, use
+    /// [`initialize()`](#method.initialize) methods.
     pub fn next(&mut self) -> &T {
         let elem_index = self.next_elem_index();
         self.prev_index = elem_index;
@@ -89,18 +89,18 @@ where
 
     /// Returns the index of the previous output state.
     ///
-    /// If the value of `prev_index` is equal to the length of `state_space`, update it
-    /// with a randomly generated value.
+    /// If the value of `prev_index` is equal to the length of `state_space`,
+    /// update it with a randomly generated value.
     ///
-    /// If the max weight of the `prev_index` line of `wa_table` is 0, update `prev_index`
-    /// randomly again.
+    /// If the max weight of the `prev_index` line of `wa_table` is 0, update
+    /// `prev_index` randomly again.
     fn get_prev_index(&mut self) -> usize {
         let mut rng = rand::thread_rng();
         loop {
             if self.prev_index == self.state_space.len() {
                 self.prev_index = rng.gen::<usize>() % self.state_space.len();
             }
-            if self.wa_table[self.prev_index].max_weight == 0 {
+            if self.wa_table[self.prev_index].max_thold == 0 {
                 self.prev_index = rng.gen::<usize>() % self.state_space.len();
             } else {
                 break;

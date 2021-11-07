@@ -1,26 +1,46 @@
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
+/// Table of aliases and threshold
+///
+/// In Walker's Alias Method, weighted random extraction is performed by the
+/// following operations.
+///
+/// 1. Get an index "i" randomly.
+/// 2. Get a random value "r" between 0 and `max_thold`
+/// 3. If "r" exceeds the value of `tholds[i]`, "i" is output as-is. If it
+///    does not, the value of `aliases[i]` (which means the alias to another
+///    index) is output.
+///
+/// The more likely a particular index is to be output, the more of its value
+/// will be included in `aliases`.
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct WalkerTable {
+    /// Alias to another index
     pub aliases: Vec<u32>,
+
+    /// Threshold for whether to output the index attached to `aliases`.
     pub tholds: Vec<u32>,
-    pub max_weight: u32,
+
+    /// Maximum threshold value
+    pub max_thold: u32,
 }
 
 impl WalkerTable {
-    pub fn new(aliases: Vec<u32>, tholds: Vec<u32>, max_weight: u32) -> WalkerTable {
+    /// Creates a new instance of [`WalkerTable`].
+    pub fn new(aliases: Vec<u32>, tholds: Vec<u32>, max_thold: u32) -> WalkerTable {
         WalkerTable {
             aliases: aliases,
             tholds: tholds,
-            max_weight: max_weight,
+            max_thold: max_thold,
         }
     }
 
+    /// Generates a weighted index at random.
     pub fn next(&self) -> usize {
         let mut rng = rand::thread_rng();
         let i = rng.gen::<usize>() % self.tholds.len();
-        let r = rng.gen_range(0..self.max_weight);
+        let r = rng.gen_range(0..self.max_thold);
         if r < self.tholds[i] {
             self.aliases[i] as usize
         } else {

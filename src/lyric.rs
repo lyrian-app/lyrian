@@ -21,12 +21,12 @@ impl Lyric {
             .fold(0, |acc, cur| acc + cur.length(syllable))
     }
 
-    /// Adds a new [`LyrianToken`] to [`Lyric`].
+    /// Adds a new token to [`Lyric`].
     pub fn add_token(&mut self, token: LyrianToken) {
         self.tokens.push(token);
     }
 
-    /// Join the words of [`Vec<LyrianToken>`].
+    /// Join the words of `tokens`.
     pub fn join(&self) -> String {
         self.tokens.iter().fold(String::from(""), |acc, cur| {
             let count = dup_num(&cur.mora.chars().collect(), &SYMBOLS.to_vec());

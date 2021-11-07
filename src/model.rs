@@ -21,8 +21,8 @@ impl<'a> LyrianModel {
 
     /// Builds a new model from text data.
     ///
-    /// Creates a [`LyrianModel`] by splitting text data into tokens and building a [`MarkovModel`]
-    /// from them.
+    /// Creates a [`LyrianModel`] by splitting text data into tokens and building
+    /// a markov chain model from them.
     pub fn from_str(contents: &str) -> Result<LyrianModel, String> {
         let tokens = tokenize(contents)?;
         let markov_model = MarkovModel::<LyrianToken>::from(tokens);
@@ -55,7 +55,8 @@ impl<'a> LyrianModel {
     ///     - Will not count voiceless sounds, like "ク" in "サクラ".
     /// - smoothly: [`bool`] (unimplemented)
     ///     - Will not count smoothly connected vowel sounds.
-    ///     - For example, the "イ" in "ダイチ" will be counted as one sound "ダイ".
+    ///     - For example, the "イ" in "ダイチ" will be counted as one sound
+    ///       "ダイ".
     pub fn generate_lyric(&mut self, lyric_len: usize, syllable: bool) -> Result<Lyric, String> {
         for _ in 0..64 {
             let mut lyric = Lyric::new(Vec::new());
@@ -77,8 +78,8 @@ impl<'a> LyrianModel {
 
     /// Converts the model to the json data.
     ///
-    /// Use this to reduce computational costs and to correct words that are not
-    /// in the corpus.
+    /// Use this to reduce computational costs and to correct words that
+    /// are not in the corpus.
     pub fn to_json_str(&self) -> Result<String, String> {
         match serde_json::to_string(&self.markov) {
             Ok(v) => Ok(v),

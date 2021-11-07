@@ -30,12 +30,6 @@ impl LyrianToken {
     ///
     /// - syllable: [`bool`]
     ///     - Will calculate the number by syllable unit.
-    /// - voiceless: [`bool`] (unimplemented)
-    ///     - Will not count voiceless sounds, like "ク" in "サクラ".
-    /// - smoothly: [`bool`] (unimplemented)
-    ///     - Will not count smoothly connected vowel sounds.
-    ///     - For example, the "イ" in "ダイチ" will be counted as one sound
-    ///       "ダイ".
     ///
     /// If you set `false` to all the arguments, you will get the number by
     /// mora unit.

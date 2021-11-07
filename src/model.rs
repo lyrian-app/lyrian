@@ -45,18 +45,17 @@ impl<'a> LyrianModel {
 
     /// Generates lyric.
     ///
-    /// The lyric information is returned by [`Lyric`].
+    /// By specifying the number of notes, a word will be assigned to each of
+    /// those notes.
     ///
-    /// The return value will be changed by the following arguments.
+    /// The way the words are assigned can be changed by setting the following
+    /// variables.
     ///
     /// - syllable: [`bool`]
     ///     - Will calculate the number by syllable unit.
-    /// - voiceless: [`bool`] (unimplemented)
-    ///     - Will not count voiceless sounds, like "ク" in "サクラ".
-    /// - smoothly: [`bool`] (unimplemented)
-    ///     - Will not count smoothly connected vowel sounds.
-    ///     - For example, the "イ" in "ダイチ" will be counted as one sound
-    ///       "ダイ".
+    ///
+    /// If you set `false` to all the arguments, you will get a lyric assigned
+    /// by mora unit.
     pub fn generate_lyric(&mut self, num_of_notes: usize, syllable: bool) -> Result<Lyric, String> {
         for _ in 0..64 {
             let mut lyric = Lyric::new(Vec::new());

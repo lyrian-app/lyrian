@@ -8,6 +8,8 @@ A Rust crate to generate Japanese lyrics with Markov chain.
 
 ## Usage
 
+### From text data
+
 ```rust
 use std::fs::File;
 use std::io::prelude::*;
@@ -23,19 +25,40 @@ fn main() {
     // Build model from text data.
     let mut model = LyrianModel::from_str(&*contents).unwrap();
 
-    // Generate lyric by syllable.
-    let lyric = model.generate_lyric(7, true).unwrap();
-    println!("syllable: {}", lyric.join());
+    // Generate lyric.
+    let lyric_1 = model.generate_lyric(7, true).unwrap();
+    let lyric_2 = model.generate_lyric(7, false).unwrap();
+    println!("syllable: {}", lyric_1.join());
+    println!("mora    : {}", lyric_2.join());
 
-    // Convert model to json.
-    let json = model.to_json_str().unwrap();
+    // Write json file.
+    // let mut f_json = File::create("./examples/sample_model2.json").unwrap();
+    // f_json.write_all(model.to_json_str().unwrap().as_bytes()).unwrap();
+}
+```
+
+### From json file
+
+```rust
+use std::fs::File;
+use std::io::prelude::*;
+
+use lyrian::model::LyrianModel;
+
+fn main() {
+    // Read json file.
+    let mut f = File::open("./examples/sample_model.json").unwrap();
+    let mut contents = String::new();
+    f.read_to_string(&mut contents).unwrap();
 
     // Build model from json.
-    let mut model = LyrianModel::from_json(&*json).unwrap();
+    let mut model = LyrianModel::from_json(&*contents).unwrap();
 
-    // Generate lyric by mora.
-    let lyric = model.generate_lyric(10, false).unwrap();
-    println!("mora    : {}", lyric.join());
+    // Generate lyric.
+    let lyric_1 = model.generate_lyric(7, true).unwrap();
+    let lyric_2 = model.generate_lyric(7, false).unwrap();
+    println!("syllable: {}", lyric_1.join());
+    println!("mora    : {}", lyric_2.join());
 }
 ```
 

@@ -1,6 +1,6 @@
 //! A module related to Markov chain and its model generation.
 
-use crate::walkers_alias_method::WalkerBox;
+use crate::walkers_alias_method::{WalkerBox, WalkerBoxBuilder};
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -63,7 +63,8 @@ where
 
         let mut walker_boxes = Vec::new();
         for row in freq_table {
-            walker_boxes.push(WalkerBox::from_index_weights(row));
+            let mut builder = WalkerBoxBuilder::new(row);
+            walker_boxes.push(builder.build());
         }
 
         MarkovModel::new(state_space, walker_boxes, space_len)

@@ -1,48 +1,47 @@
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct WalkerBox {
-    pub aliases: Vec<u32>,
-    pub tholds: Vec<u32>,
-    pub max_weight: u32,
+pub struct WalkerBoxBuilder {
+    index_weights: Vec<u32>,
 }
 
-impl WalkerBox {
-    pub fn new(aliases: Vec<u32>, tholds: Vec<u32>, max_weight: u32) -> WalkerBox {
-        WalkerBox {
-            aliases: aliases,
-            tholds: tholds,
-            max_weight: max_weight,
+impl WalkerBoxBuilder {
+    pub fn new(index_weights: Vec<u32>) -> WalkerBoxBuilder {
+        WalkerBoxBuilder {
+            index_weights: index_weights,
         }
     }
 
-    pub fn from_index_weights(index_weights: Vec<u32>) -> WalkerBox {
-        let table_len = index_weights.len();
+    pub fn build(&mut self) -> WalkerBox {
+        let table_len = self.index_weights.len();
 
-        let sum = index_weights.iter().fold(0, |acc, cur| acc + cur);
-        let index_weights = index_weights
+        self.index_weights = self
+            .index_weights
             .iter()
-            .map(|w| w * sum * table_len as u32)
+            .map(|w| w * self.sum() * table_len as u32)
             .collect::<Vec<u32>>()
             .to_vec();
 
-        let sum = index_weights.iter().fold(0, |acc, cur| acc + cur);
-        let mean = sum / table_len as u32;
+        let (aliases, tholds) = self.calc_box();
 
-        let mut below_vec = Vec::new();
-        let mut above_vec = Vec::new();
-        for (i, w) in index_weights.iter().enumerate() {
-            if *w <= mean {
-                below_vec.push((i, *w));
-            } else {
-                above_vec.push((i, *w));
-            }
-        }
+        WalkerBox::new(aliases, tholds, self.mean())
+    }
+
+    fn sum(&self) -> u32 {
+        self.index_weights.iter().fold(0, |acc, cur| acc + cur)
+    }
+
+    fn mean(&self) -> u32 {
+        self.sum() / self.index_weights.len() as u32
+    }
+
+    fn calc_box(&self) -> (Vec<u32>, Vec<u32>) {
+        let table_len = self.index_weights.len();
+        let (mut below_vec, mut above_vec) = self.separate_weights();
+        let mean = self.mean();
 
         let mut aliases = vec![0; table_len];
         let mut tholds = vec![0; table_len];
-
         loop {
             match below_vec.pop() {
                 Some(below) => {
@@ -64,7 +63,37 @@ impl WalkerBox {
             }
         }
 
-        WalkerBox::new(aliases, tholds, mean)
+        (aliases, tholds)
+    }
+
+    fn separate_weights(&self) -> (Vec<(usize, u32)>, Vec<(usize, u32)>) {
+        let mut below_vec = Vec::new();
+        let mut above_vec = Vec::new();
+        for (i, w) in self.index_weights.iter().enumerate() {
+            if *w <= self.mean() {
+                below_vec.push((i, *w));
+            } else {
+                above_vec.push((i, *w));
+            }
+        }
+        (below_vec, above_vec)
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
+pub struct WalkerBox {
+    pub aliases: Vec<u32>,
+    pub tholds: Vec<u32>,
+    pub max_weight: u32,
+}
+
+impl WalkerBox {
+    pub fn new(aliases: Vec<u32>, tholds: Vec<u32>, max_weight: u32) -> WalkerBox {
+        WalkerBox {
+            aliases: aliases,
+            tholds: tholds,
+            max_weight: max_weight,
+        }
     }
 
     pub fn next(&self) -> usize {
@@ -81,12 +110,13 @@ impl WalkerBox {
 
 #[cfg(test)]
 mod walkers_alias_method_test {
-    use crate::walkers_alias_method::WalkerBox;
+    use crate::walkers_alias_method::{WalkerBox, WalkerBoxBuilder};
 
     #[test]
     fn make_box() {
         let index_weights = vec![2, 7, 9, 2, 4, 8, 1, 3, 6, 5];
-        let w_box = WalkerBox::from_index_weights(index_weights);
+        let mut builder = WalkerBoxBuilder::new(index_weights);
+        let w_box = builder.build();
 
         let expected = WalkerBox::new(
             vec![2, 1, 1, 2, 2, 2, 5, 9, 5, 8],

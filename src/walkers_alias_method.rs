@@ -3,13 +3,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct WalkerBox {
-    pub aliases: Vec<usize>,
-    pub tholds: Vec<usize>,
-    pub max_weight: usize,
+    pub aliases: Vec<u32>,
+    pub tholds: Vec<u32>,
+    pub max_weight: u32,
 }
 
 impl WalkerBox {
-    pub fn new(aliases: Vec<usize>, tholds: Vec<usize>, max_weight: usize) -> WalkerBox {
+    pub fn new(aliases: Vec<u32>, tholds: Vec<u32>, max_weight: u32) -> WalkerBox {
         WalkerBox {
             aliases: aliases,
             tholds: tholds,
@@ -17,18 +17,18 @@ impl WalkerBox {
         }
     }
 
-    pub fn from_index_weights(index_weights: Vec<usize>) -> WalkerBox {
+    pub fn from_index_weights(index_weights: Vec<u32>) -> WalkerBox {
         let table_len = index_weights.len();
 
         let sum = index_weights.iter().fold(0, |acc, cur| acc + cur);
         let index_weights = index_weights
             .iter()
-            .map(|w| w * sum * table_len)
-            .collect::<Vec<usize>>()
+            .map(|w| w * sum * table_len as u32)
+            .collect::<Vec<u32>>()
             .to_vec();
 
         let sum = index_weights.iter().fold(0, |acc, cur| acc + cur);
-        let mean = sum / table_len;
+        let mean = sum / table_len as u32;
 
         let mut below_vec = Vec::new();
         let mut above_vec = Vec::new();
@@ -48,7 +48,7 @@ impl WalkerBox {
                 Some(below) => {
                     if let Some(above) = above_vec.pop() {
                         let diff = mean - below.1;
-                        aliases[below.0] = above.0;
+                        aliases[below.0] = above.0 as u32;
                         tholds[below.0] = diff;
                         if above.1 - diff <= mean {
                             below_vec.push((above.0, above.1 - diff));
@@ -56,7 +56,7 @@ impl WalkerBox {
                             above_vec.push((above.0, above.1 - diff));
                         }
                     } else {
-                        aliases[below.0] = below.0;
+                        aliases[below.0] = below.0 as u32;
                         tholds[below.0] = below.1;
                     }
                 }

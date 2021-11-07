@@ -94,7 +94,7 @@ where
         let max = self.walker_boxes[row].max_weight;
         let r = rng.gen_range(0..max);
         if r < self.walker_boxes[row].tholds[col] {
-            self.walker_boxes[row].aliases[col]
+            self.walker_boxes[row].aliases[col] as usize
         } else {
             col
         }

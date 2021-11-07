@@ -1,7 +1,7 @@
 //! A module related to Markov chain and its model generation.
 
-use crate::builder::WalkerTableBuilder;
-use crate::walkers_alias_method::WalkerTable;
+use crate::walkers_alias_method::builder::WalkerTableBuilder;
+use crate::walkers_alias_method::table::WalkerTable;
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -118,7 +118,7 @@ where
 #[cfg(test)]
 mod markov_test {
     use crate::markov::MarkovModel;
-    use crate::walkers_alias_method::WalkerTable;
+    use crate::walkers_alias_method::table::WalkerTable;
 
     #[test]
     fn make_markov_model() {

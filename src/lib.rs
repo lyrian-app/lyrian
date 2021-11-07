@@ -43,7 +43,6 @@
 //! ```
 //!
 
-pub mod builder;
 pub mod chars;
 pub mod lyric;
 pub mod markov;

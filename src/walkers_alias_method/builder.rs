@@ -1,4 +1,4 @@
-use crate::walkers_alias_method::WalkerTable;
+use crate::walkers_alias_method::table::WalkerTable;
 
 pub struct WalkerTableBuilder {
     index_weights: Vec<u32>,
@@ -81,8 +81,8 @@ impl WalkerTableBuilder {
 
 #[cfg(test)]
 mod builder_test {
-    use crate::builder::WalkerTableBuilder;
-    use crate::walkers_alias_method::WalkerTable;
+    use crate::walkers_alias_method::builder::WalkerTableBuilder;
+    use crate::walkers_alias_method::table::WalkerTable;
 
     #[test]
     fn make_table() {

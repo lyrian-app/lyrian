@@ -31,7 +31,7 @@ impl WalkerTable {
 
 #[cfg(test)]
 mod walkers_alias_method_test {
-    use crate::builder::WalkerTableBuilder;
+    use crate::walkers_alias_method::builder::WalkerTableBuilder;
 
     #[test]
     fn unweighted_random_sampling() {

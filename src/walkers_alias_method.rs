@@ -1,3 +1,4 @@
+use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
@@ -64,6 +65,17 @@ impl WalkerBox {
         }
 
         WalkerBox::new(aliases, tholds, mean)
+    }
+
+    pub fn next(&self) -> usize {
+        let mut rng = rand::thread_rng();
+        let i = rng.gen::<usize>() % self.tholds.len();
+        let r = rng.gen_range(0..self.max_weight);
+        if r < self.tholds[i] {
+            self.aliases[i] as usize
+        } else {
+            i
+        }
     }
 }
 

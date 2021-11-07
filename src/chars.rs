@@ -1,4 +1,4 @@
-//! A module that defines the characters associated with the number of pronunciations.
+//! Defines the characters associated with the number of pronunciations.
 
 /// Returns the counts of duplicated elements in two [`Vec<T>`].
 pub fn dup_num<T: std::cmp::PartialEq>(list1: &Vec<T>, list2: &Vec<T>) -> usize {

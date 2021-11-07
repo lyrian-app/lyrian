@@ -1,12 +1,11 @@
-//! # walkers_alias_method
-//!
-//! A module to create the alias table by Walker's Alias Method.
-//! In Lyrian, it is used for weighted random sampling.
+//! Creates a alias table by Walker's Alias Method.
 //!
 //! ## Example
 //!
 //! ```rust
-//! let fruit = ["Apple", "Banana", "Orange", "Peach"]
+//! use lyrian::walkers_alias_method::builder::WalkerTableBuilder;
+//!
+//! let fruit = ["Apple", "Banana", "Orange", "Peach"];
 //!
 //! // The weights of the output indexes.
 //! // The higher the weight, the more likely the corresponding index will be

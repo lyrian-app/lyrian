@@ -1,9 +1,11 @@
+//! A module for weighted random sampling by Walker's Alias Method.
+
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
 /// Table of aliases and threshold
 ///
-/// In Walker's Alias Method, weighted random extraction is performed by the
+/// In Walker's Alias Method, weighted random sampling is performed by the
 /// following operations.
 ///
 /// 1. Get an index "i" randomly.

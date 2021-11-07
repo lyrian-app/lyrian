@@ -1,4 +1,4 @@
-//! A module to build a [`WalkerTable`] instance.
+//! Builds a [`WalkerTable`] instance.
 
 use crate::walkers_alias_method::table::WalkerTable;
 

@@ -1,4 +1,4 @@
-//! A module related to the lyric generation.
+//! Lyric generation with Markov chain.
 
 use crate::lyric::Lyric;
 use crate::markov::MarkovModel;

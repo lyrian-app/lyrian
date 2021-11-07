@@ -1,4 +1,4 @@
-//! A module related to the information of the generated lyric.
+//! Information of the generated lyric.
 
 use crate::chars::{dup_num, SYMBOLS};
 use crate::morphological_analysis::LyrianToken;

@@ -1,4 +1,4 @@
-//! A module related to Markov chain and its model generation.
+//! Markov chain and its model generation.
 
 use crate::walkers_alias_method::builder::WalkerTableBuilder;
 use crate::walkers_alias_method::table::WalkerTable;

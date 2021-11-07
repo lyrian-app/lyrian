@@ -86,7 +86,7 @@ where
 
     /// Returns the index of the next output state.
     fn next_elem_index(&mut self) -> usize {
-        let row = self.prev_elem_index();
+        let row = self.get_prev_index();
         self.walker_boxes[row].next()
     }
 
@@ -97,7 +97,7 @@ where
     ///
     /// If the box weight of the `prev_index` line of `walker_box` is 0, update `prev_index`
     /// randomly again.
-    fn prev_elem_index(&mut self) -> usize {
+    fn get_prev_index(&mut self) -> usize {
         let mut rng = rand::thread_rng();
         loop {
             if self.prev_index == self.state_space.len() {

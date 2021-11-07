@@ -30,7 +30,7 @@ impl WalkerTable {
 }
 
 #[cfg(test)]
-mod walkers_alias_method_test {
+mod table_test {
     use crate::walkers_alias_method::builder::WalkerTableBuilder;
 
     #[test]

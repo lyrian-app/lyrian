@@ -1,6 +1,7 @@
 //! A module related to Markov chain and its model generation.
 
-use crate::walkers_alias_method::{WalkerBox, WalkerBoxBuilder};
+use crate::builder::WalkerBoxBuilder;
+use crate::walkers_alias_method::WalkerBox;
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 

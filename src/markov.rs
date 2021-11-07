@@ -151,4 +151,29 @@ mod markov_test {
 
         assert_eq!(actual, expected)
     }
+
+    #[test]
+    fn check_convergence_in_probability() {
+        let mut markov_model = MarkovModel::from(vec!["りんご", "と", "ばなな", "と", "りんご"]);
+
+        const N: usize = 100_000;
+        const P: f32 = 0.25;
+        const EXPT: f32 = N as f32 * P;
+
+        let mut elements = [""; N];
+        for j in 0..N {
+            elements[j] = markov_model.next();
+        }
+
+        let a = elements
+            .iter()
+            .fold(0, |acc, cur| if *cur == "りんご" { acc + 1 } else { acc })
+            as f32;
+        let b = elements
+            .iter()
+            .fold(0, |acc, cur| if *cur == "ばなな" { acc + 1 } else { acc })
+            as f32;
+
+        assert!((EXPT * 0.95 < a && a < EXPT * 1.05) && (EXPT * 0.95 < b && b < EXPT * 1.05))
+    }
 }

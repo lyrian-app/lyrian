@@ -70,6 +70,4 @@ pub mod lyric;
 pub mod model;
 
 mod chars;
-mod markov;
 mod morphological_analysis;
-mod walkers_alias_method;

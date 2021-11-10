@@ -587,9 +587,21 @@ version = "0.1.0"
 dependencies = [
  "lindera",
  "lindera-core",
+ "markov_rs",
  "rand",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "markov_rs"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "96ad05e1e9f06ebecea1cb662f241999cf9422471bd813a5869d8f9cc6ed9d28"
+dependencies = [
+ "rand",
+ "serde",
+ "weighted_rand",
 ]
 
 [[package]]
@@ -1317,6 +1329,16 @@ checksum = "38eb105f1c59d9eaa6b5cdc92b859d85b926e82cb2e0945cd0c9259faa6fe9fb"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "weighted_rand"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cbf1b058c8c8f8273ad59c06b4513b42b48a408fcc8f24b55056a2e5864d38eb"
+dependencies = [
+ "rand",
+ "serde",
 ]
 
 [[package]]

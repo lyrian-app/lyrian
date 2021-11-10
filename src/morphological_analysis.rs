@@ -106,8 +106,8 @@ pub fn tokenize(contents: &str) -> Result<Vec<LyrianToken>, String> {
 
         lyr_tokens.push(LyrianToken::new(
             token.text.to_string(),
-            mem::replace(&mut detail[0], String::from("")),
-            mem::replace(&mut detail[1], String::from("")),
+            mem::take(&mut detail[0]),
+            mem::take(&mut detail[1]),
         ));
     }
 

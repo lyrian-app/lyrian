@@ -588,7 +588,6 @@ dependencies = [
  "lindera",
  "lindera-core",
  "markov_rs",
- "rand",
  "serde",
  "serde_json",
 ]

@@ -98,4 +98,13 @@ mod model_test {
         let json_model = LyrianModel::from_json(&*json).unwrap();
         assert_eq!(json_model, str_model)
     }
+
+    #[test]
+    fn check_lyric_length() {
+        let mut model = LyrianModel::from_str("すもももももももものうち").unwrap();
+        let lyric_1 = model.generate_lyric(5, false).unwrap();
+        let lyric_2 = model.generate_lyric(5, true).unwrap();
+
+        assert_eq!((lyric_1.length(false), lyric_2.length(true)), (5, 5));
+    }
 }

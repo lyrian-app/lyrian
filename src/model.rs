@@ -58,14 +58,14 @@ impl<'a> LyrianModel {
     /// by mora unit.
     pub fn generate_lyric(&mut self, num_of_notes: usize, syllable: bool) -> Result<Lyric, String> {
         for _ in 0..64 {
-            let mut lyric = Lyric::new(Vec::new());
+            let mut lyric = Lyric::new(vec![self.get_first_token()]);
             for _ in 0..64 {
-                lyric.add_token(self.markov.next().clone());
                 if num_of_notes < lyric.length(syllable) {
                     break;
                 } else if num_of_notes == lyric.length(syllable) {
                     return Ok(lyric);
                 }
+                lyric.add_token(self.markov.next().clone());
             }
             self.markov.initialize();
         }
@@ -84,6 +84,18 @@ impl<'a> LyrianModel {
             Ok(v) => Ok(v),
             Err(e) => Err(e.to_string()),
         }
+    }
+
+    // Gets a first token that is neither a particle nor an auxiliary verb.
+    fn get_first_token(&mut self) -> LyrianToken {
+        let mut token;
+        loop {
+            token = self.markov.next().clone();
+            if token.part_of_speech != "助詞" && token.part_of_speech != "助動詞" {
+                break;
+            }
+        }
+        token
     }
 }
 

@@ -2,7 +2,6 @@
 
 use lindera::tokenizer::Tokenizer;
 use serde::{Deserialize, Serialize};
-use std::mem;
 
 use crate::chars::*;
 
@@ -12,15 +11,22 @@ pub struct LyrianToken {
     pub word: String,
     pub mora: String,
     pub syllable: String,
+    pub part_of_speech: String,
 }
 
 impl LyrianToken {
     /// Creates a new instance of [`LyrianToken`].
-    pub fn new(word: String, mora: String, syllable: String) -> LyrianToken {
+    pub fn new(
+        word: String,
+        mora: String,
+        syllable: String,
+        part_of_speech: String,
+    ) -> LyrianToken {
         LyrianToken {
             word: word,
             mora: mora,
             syllable: syllable,
+            part_of_speech: part_of_speech,
         }
     }
 
@@ -96,19 +102,23 @@ pub fn tokenize(contents: &str) -> Result<Vec<LyrianToken>, String> {
         Err(e) => return Err(e.to_string()),
     }
 
-    let mut lyr_tokens = Vec::new();
+    let mut lyr_tokens = Vec::with_capacity(lin_tokens.len());
     for token in lin_tokens {
-        let mut detail = if token.detail.len() != 1 {
-            token.detail.split_at(7).1.to_vec() // get information of reading and phonation
+        if token.detail.len() != 1 {
+            lyr_tokens.push(LyrianToken::new(
+                token.text.to_string(),
+                token.detail[7].to_string(),
+                token.detail[8].to_string(),
+                token.detail[0].to_string(),
+            ));
         } else {
-            vec![String::from("unknown"); 2]
-        };
-
-        lyr_tokens.push(LyrianToken::new(
-            token.text.to_string(),
-            mem::take(&mut detail[0]),
-            mem::take(&mut detail[1]),
-        ));
+            lyr_tokens.push(LyrianToken::new(
+                token.text.to_string(),
+                String::from("unknown"),
+                String::from("unknown"),
+                String::from("unknown"),
+            ));
+        }
     }
 
     Ok(lyr_tokens)
@@ -128,13 +138,44 @@ mod morphological_analysis_test {
                         "すもも".to_string(),
                         "スモモ".to_string(),
                         "スモモ".to_string(),
+                        "名詞".to_string(),
                     ),
-                    LyrianToken::new("も".to_string(), "モ".to_string(), "モ".to_string()),
-                    LyrianToken::new("もも".to_string(), "モモ".to_string(), "モモ".to_string()),
-                    LyrianToken::new("も".to_string(), "モ".to_string(), "モ".to_string()),
-                    LyrianToken::new("もも".to_string(), "モモ".to_string(), "モモ".to_string()),
-                    LyrianToken::new("の".to_string(), "ノ".to_string(), "ノ".to_string()),
-                    LyrianToken::new("うち".to_string(), "ウチ".to_string(), "ウチ".to_string()),
+                    LyrianToken::new(
+                        "も".to_string(),
+                        "モ".to_string(),
+                        "モ".to_string(),
+                        "助詞".to_string(),
+                    ),
+                    LyrianToken::new(
+                        "もも".to_string(),
+                        "モモ".to_string(),
+                        "モモ".to_string(),
+                        "名詞".to_string(),
+                    ),
+                    LyrianToken::new(
+                        "も".to_string(),
+                        "モ".to_string(),
+                        "モ".to_string(),
+                        "助詞".to_string(),
+                    ),
+                    LyrianToken::new(
+                        "もも".to_string(),
+                        "モモ".to_string(),
+                        "モモ".to_string(),
+                        "名詞".to_string(),
+                    ),
+                    LyrianToken::new(
+                        "の".to_string(),
+                        "ノ".to_string(),
+                        "ノ".to_string(),
+                        "助詞".to_string(),
+                    ),
+                    LyrianToken::new(
+                        "うち".to_string(),
+                        "ウチ".to_string(),
+                        "ウチ".to_string(),
+                        "名詞".to_string(),
+                    ),
                 ];
                 assert_eq!(tokens, expected)
             }
@@ -148,6 +189,7 @@ mod morphological_analysis_test {
             "大空".to_string(),
             "オオゾラ".to_string(),
             "オーゾラ".to_string(),
+            "名詞".to_string(),
         );
         assert_eq!(token.length(false), 4)
     }
@@ -158,6 +200,7 @@ mod morphological_analysis_test {
             "大空".to_string(),
             "オオゾラ".to_string(),
             "オーゾラ".to_string(),
+            "名詞".to_string(),
         );
         assert_eq!(token.length(true), 3)
     }
@@ -168,13 +211,19 @@ mod morphological_analysis_test {
             "ジョバンニ".to_string(),
             "ジョバンニ".to_string(),
             "ジョバンニ".to_string(),
+            "名詞".to_string(),
         );
         assert_eq!(token.length(false), 4)
     }
 
     #[test]
     fn get_symbol_length() {
-        let token = LyrianToken::new("。".to_string(), "。".to_string(), "。".to_string());
+        let token = LyrianToken::new(
+            "。".to_string(),
+            "。".to_string(),
+            "。".to_string(),
+            "記号".to_string(),
+        );
         assert_eq!(token.length(false), 0)
     }
 

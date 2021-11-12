@@ -52,9 +52,20 @@ mod lyric_test {
                 "大きな".to_string(),
                 "オオキナ".to_string(),
                 "オーキナ".to_string(),
+                "名詞".to_string(),
             ),
-            LyrianToken::new("、".to_string(), "、".to_string(), "、".to_string()),
-            LyrianToken::new("空".to_string(), "ソラ".to_string(), "ソラ".to_string()),
+            LyrianToken::new(
+                "、".to_string(),
+                "、".to_string(),
+                "、".to_string(),
+                "記号".to_string(),
+            ),
+            LyrianToken::new(
+                "空".to_string(),
+                "ソラ".to_string(),
+                "ソラ".to_string(),
+                "名詞".to_string(),
+            ),
         ];
         let lyric = Lyric::new(tokens);
         assert_eq!(lyric.join(), "大きな空".to_string())
